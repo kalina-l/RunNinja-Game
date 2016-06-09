@@ -41,7 +41,7 @@ public class PlayerControl : MonoBehaviour
 			grounded = false;
 		
 		// If the jump button is pressed and the player is grounded then the player should jump.
-		if(Input.GetButtonDown("Jump") && grounded)
+		if(Input.GetButtonDown("Jump1") && grounded)
 			jump = true;
 	}
 
@@ -49,7 +49,7 @@ public class PlayerControl : MonoBehaviour
 	void FixedUpdate ()
 	{
 		// Cache the horizontal input.
-		float h = Input.GetAxis("Horizontal");
+		float h = Input.GetAxis("Horizontal1");
 		if (h < 0.1f && h > -0.1f && grounded) {
 			rigidbody.velocity = Vector2.zero;
 			rigidbody.angularVelocity = 0f;	
@@ -94,10 +94,6 @@ public class PlayerControl : MonoBehaviour
 			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
 			jump = false;
 		}
-	}
-	
-	void applyCounterforce(){
-
 	}
 
 	void Flip ()
