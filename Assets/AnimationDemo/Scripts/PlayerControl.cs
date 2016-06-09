@@ -18,6 +18,7 @@ public class PlayerControl : MonoBehaviour
 	private Transform groundCheck;			// A position marking where to check if the player is grounded.
 	private bool grounded = false;			// Whether or not the player is grounded.
 	private Animator anim;					// Reference to the player's animator component.
+	private Rigidbody2D rigidbody;
 
 	void Awake()
 	{
@@ -25,8 +26,8 @@ public class PlayerControl : MonoBehaviour
 		groundCheck = transform.Find("groundCheck");
 		anim = GetComponent<Animator>();
 		Vector2 collidersSize = GetComponent<BoxCollider2D> ().size;
+		rigidbody = GetComponent<Rigidbody2D> ();
 		collidersHalfWidth = new Vector3 (collidersSize.x / 2, 0, 0);
-		Debug.Log (collidersHalfWidth.y);
 	}
 
 
@@ -50,25 +51,26 @@ public class PlayerControl : MonoBehaviour
 		// Cache the horizontal input.
 		float h = Input.GetAxis("Horizontal");
 		if (h < 0.1f && h > -0.1f && grounded) {
-			GetComponent<Rigidbody2D> ().velocity = new Vector2(0, GetComponent<Rigidbody2D> ().velocity.y);
+			rigidbody.velocity = Vector2.zero;
+			rigidbody.angularVelocity = 0f;	
+			if(!rigidbody.velocity.Equals(Vector2.zero))
+				Debug.Log (rigidbody.velocity);
 		}
-		Debug.Log (GetComponent<Rigidbody2D> ().velocity);
 
 		// The Speed animator parameter is set to the absolute value of the horizontal input.
 		anim.SetFloat("Speed", Mathf.Abs(h));
 
 		// If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
-		if (h * GetComponent<Rigidbody2D> ().velocity.x < maxSpeed) {
+		if (h * rigidbody.velocity.x < maxSpeed) {
 			// ... add a force to the player.
 			//GetComponent<Rigidbody2D>().AddForce(Vector2.right * h * moveForce);
-			moveForce = 15;
 			AddForce (Vector2.right * h * moveForce, ForceMode.Impulse);
 		}
 
 		// If the player's horizontal velocity is greater than the maxSpeed...
-		if(Mathf.Abs(GetComponent<Rigidbody2D>().velocity.x) > maxSpeed)
+		if(Mathf.Abs(rigidbody.velocity.x) > maxSpeed)
 			// ... set the player's velocity to the maxSpeed in the x axis.
-			GetComponent<Rigidbody2D>().velocity = new Vector2(Mathf.Sign(GetComponent<Rigidbody2D>().velocity.x) * maxSpeed, GetComponent<Rigidbody2D>().velocity.y);
+			rigidbody.velocity = new Vector2(Mathf.Sign(rigidbody.velocity.x) * maxSpeed, rigidbody.velocity.y);
 
 		// If the input is moving the player right and the player is facing left...
 		if(h > 0 && !facingRight)
@@ -80,13 +82,14 @@ public class PlayerControl : MonoBehaviour
 			Flip();
 
 		anim.SetBool ("Fall", !grounded);
-		anim.SetBool ("Jump", !grounded && GetComponent<Rigidbody2D> ().velocity.y > 0);
+		anim.SetBool ("Jump", !grounded && rigidbody.velocity.y > 0);
 
 		// If the player should jump...
 		if(jump)
 		{
 			// Add a vertical force to the player.
-			GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, jumpForce));
+			//GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, jumpForce));
+			AddForce(new Vector2(0f, jumpForce), ForceMode.Impulse);
 
 			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
 			jump = false;
