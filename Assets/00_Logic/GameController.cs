@@ -7,7 +7,7 @@ public class GameController : MonoBehaviour {
     Für allgemeines Zeug wie Screens, Menüs, Gamestates usw.
     */
 
-    private ParticipantManager participantManager;
+    public ParticipantManager participantManager;
 
     public static GameController instance { get; private set; }
 
@@ -19,7 +19,6 @@ public class GameController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        participantManager = new ParticipantManager();
 
     }
 	

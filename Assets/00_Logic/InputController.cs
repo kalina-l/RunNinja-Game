@@ -6,11 +6,11 @@ public class InputController: MonoBehaviour {
     // Eingabe Tastatur, controller 
     public int idOfPlayer;
 
-    public static InputController instance { get; private set; }
+    //public static InputController instance { get; private set; }
 
     void Awake()
     {
-        instance = this;
+        //instance = this;
     }
 
 	// Use this for initialization

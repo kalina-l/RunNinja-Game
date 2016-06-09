@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour {
     // Steuert bewegung, physik und animation
     // hier kein Inputs
 
+    public InputController inputController;
+
 	// Use this for initialization
 	void Start () {
 	
