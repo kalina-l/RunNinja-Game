@@ -6,7 +6,7 @@ public abstract class Controls  {
     public enum Input
     {
         Horizontal,
-        Vertical,
+        Jump,
         Action, //powerups
         Attack  //attack
     };
