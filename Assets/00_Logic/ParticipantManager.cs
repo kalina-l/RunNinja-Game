@@ -4,11 +4,22 @@ using System.Collections;
 public class ParticipantManager : MonoBehaviour {
 
     //public ArrayList participants;
-    public Transform partipantPrefab;
+    public GameObject partipantPrefab;
+
+    private int numOfPlayers;
+
+    public static ParticipantManager instance { get; private set; }
+
+    void Awake()
+    {
+        instance = this;
+    }
+    
 
     // Use this for initialization
     void Start () {
-        //participants = new ArrayList();
+        this.numOfPlayers = 0;
+
     }
 	
 	// Update is called once per frame
@@ -23,8 +34,19 @@ public class ParticipantManager : MonoBehaviour {
 
     void AddParticipant()
     {
-        //Add Prefab to scene
-        var go = Instantiate(partipantPrefab, transform.position, transform.rotation);
+        GameObject clone;
+        clone = Instantiate(partipantPrefab,
+                            partipantPrefab.transform.position,
+                            partipantPrefab.transform.rotation) as GameObject;
+
+        //Debug.Log("Type of clone "+ clone.GetType());
+
+        numOfPlayers++; 
+
+        Participant part = clone.GetComponent("Participant") as Participant;
+        //Debug.Log("Type of part " + part.GetType());
+
+        part.setId(numOfPlayers);
     }
 
     void RemoveParticipant(Participant p)

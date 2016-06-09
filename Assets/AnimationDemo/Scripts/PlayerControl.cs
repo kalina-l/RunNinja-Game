@@ -9,6 +9,7 @@ public class PlayerControl : MonoBehaviour
 	public bool jump = false;				// Condition for whether the player should jump.
 	private Vector3 collidersHalfWidth;
 
+    public int control_id = 1;
 
 	public float moveForce = 365f;			// Amount of force added to move the player left and right.
 	public float maxSpeed = 5f;				// The fastest the player can travel in the x axis.
@@ -39,17 +40,21 @@ public class PlayerControl : MonoBehaviour
 			grounded = true;
 		else
 			grounded = false;
-		
-		// If the jump button is pressed and the player is grounded then the player should jump.
-		if(Input.GetButtonDown("Jump1") && grounded)
+
+        // If the jump button is pressed and the player is grounded then the player should jump.
+        string controlAccess = Controls.GetControlValue(Controls.Input.Jump, this.control_id);
+        //Debug.Log(controlAccess);
+		if(Input.GetButtonDown(controlAccess) && grounded)
 			jump = true;
 	}
 
 
 	void FixedUpdate ()
 	{
-		// Cache the horizontal input.
-		float h = Input.GetAxis("Horizontal1");
+        // Cache the horizontal input.
+        string controlAccess = Controls.GetControlValue(Controls.Input.Horizontal, this.control_id);
+        //Debug.Log(controlAccess);
+        float h = Input.GetAxis(controlAccess);
 		if (h < 0.1f && h > -0.1f && grounded) {
 			rigidbody.velocity = Vector2.zero;
 			rigidbody.angularVelocity = 0f;	
