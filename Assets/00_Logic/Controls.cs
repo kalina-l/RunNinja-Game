@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Controls  {
+public abstract class Controls  {
 
     public enum Input
     {
-        Jump,
-        Down,
-        Left,
-        Right,
+        Horizontal,
+        Vertical,
         Action, //powerups
         Attack  //attack
     };
+
+    public static string GetControlValue(Input input, int id)
+    {
+        return input.ToString() + id.ToString();
+    }
 
 }

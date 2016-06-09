@@ -4,6 +4,7 @@ using System.Collections;
 public class InputController: MonoBehaviour {
 
     // Eingabe Tastatur, controller 
+    public int idOfPlayer;
 
     public static InputController instance { get; private set; }
 
