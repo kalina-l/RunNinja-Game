@@ -7,8 +7,6 @@ public class GameController : MonoBehaviour {
     Für allgemeines Zeug wie Screens, Menüs, Gamestates usw.
     */
 
-    public ParticipantManager participantManager;
-
     public static GameController instance { get; private set; }
 
     void Awake()

@@ -14,8 +14,9 @@ public class Participant : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
-	}
+        //this.transform.position = transform.Find("Character").position;
+
+    }
     public void setId(int value)
     {
         //Debug.Log(id);

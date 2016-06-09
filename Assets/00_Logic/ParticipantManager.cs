@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class ParticipantManager : MonoBehaviour {
 
-    //public ArrayList participants;
+    public ArrayList participants;
     public GameObject partipantPrefab;
+    CameraController camController;
 
     private int numOfPlayers;
 
@@ -19,6 +21,8 @@ public class ParticipantManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         this.numOfPlayers = 0;
+        participants = new ArrayList();
+        camController = GetComponent("CameraController") as CameraController;
 
     }
 	
@@ -26,11 +30,38 @@ public class ParticipantManager : MonoBehaviour {
 	void Update () {
         if (Input.GetKeyDown(KeyCode.N))
         {
-            Debug.Log("Add new Particpant");
+            //Debug.Log("Add new Particpant");
             AddParticipant();
         }
-	
-	}
+
+        if (participants.Count != 0)
+        {
+            //Debug.Log("Find leading Player");
+            Participant leader = getLeadingParticipant();
+            camController.leadingPlayer = leader.gameObject;
+        }
+
+
+    }
+
+    private Participant getLeadingParticipant()
+    {
+        Participant leader = (Participant)participants.ToArray()[0];
+        foreach (Participant p in participants)
+        {
+            Debug.Log(p.transform.Find("Character").position.x);
+            if (p.transform.Find("Character").position.x > leader.transform.Find("Character").position.x)
+            {
+                leader = p;
+            }
+        }
+        return leader;
+    }
+
+    void FixedUpdate()
+    {
+
+    }
 
     void AddParticipant()
     {
@@ -47,6 +78,7 @@ public class ParticipantManager : MonoBehaviour {
         //Debug.Log("Type of part " + part.GetType());
 
         part.setId(numOfPlayers);
+        participants.Add(part);
     }
 
     void RemoveParticipant(Participant p)
