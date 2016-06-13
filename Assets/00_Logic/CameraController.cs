@@ -20,7 +20,10 @@ public class CameraController : MonoBehaviour {
 	void FixedUpdate(){
         if(leadingPlayer != null)
         {
-            camera.transform.position = leadingPlayer.transform.Find("Character").position;
+            Vector3 pos = leadingPlayer.transform.Find("Character").position;
+            Vector3 newPos = camera.transform.position;
+            newPos.x = pos.x;
+            camera.transform.position = newPos;
         }
         
 	}
