@@ -119,8 +119,8 @@ public class PlayerControl : MonoBehaviour
 
 	private void checkFallsHeight(){
 		// stun if the player falls from a certain height
-		if (grounded && !rolling) {
-			if (Mathf.Abs (transform.position.y - highestJumpXValue) > saveJumpHeight) {
+		if (grounded) {
+			if (Mathf.Abs (transform.position.y - highestJumpXValue) > saveJumpHeight  && !rolling) {
 				rigidbody.velocity = Vector2.zero;
 				Debug.Log ("stun");
 				StartCoroutine (stunPlayer (15)); // stun for number of frames
