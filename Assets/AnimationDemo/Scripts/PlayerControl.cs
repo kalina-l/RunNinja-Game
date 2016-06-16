@@ -7,6 +7,7 @@ public class PlayerControl : MonoBehaviour
 	public bool facingRight = true;			// For determining which way the player is currently facing.
 	[HideInInspector]
 	public bool jump = false;				// Condition for whether the player should jump.
+	public bool rolling = false;
 	private Vector3 collidersHalfWidth;
 
     public int control_id = 1;
@@ -15,9 +16,15 @@ public class PlayerControl : MonoBehaviour
 	public float maxSpeed = 5f;				// The fastest the player can travel in the x axis.
 	public AudioClip[] jumpClips;			// Array of clips for when the player jumps.
 	public float jumpForce = 1000f;			// Amount of force added when the player jumps.
+	public float saveJumpHeight;
 
 	private Transform groundCheck;			// A position marking where to check if the player is grounded.
 	private bool grounded = false;			// Whether or not the player is grounded.
+	private bool doubleJumpUsed;
+	public bool falling;
+	private float highestJumpXValue = int.MinValue;
+	private bool stunned;
+
 	private Animator anim;					// Reference to the player's animator component.
 	private Rigidbody2D rigidbody;
 
@@ -34,18 +41,22 @@ public class PlayerControl : MonoBehaviour
 
 	void Update()
 	{
-		// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.4
-		if (Physics2D.Linecast (transform.position - collidersHalfWidth, groundCheck.position - collidersHalfWidth, 1 << LayerMask.NameToLayer ("Ground")) ||
-			Physics2D.Linecast (transform.position + collidersHalfWidth, groundCheck.position + collidersHalfWidth, 1 << LayerMask.NameToLayer ("Ground")))
-			grounded = true;
-		else
-			grounded = false;
+		checkIfGrounded ();
+		checkFallsHeight ();
 
         // If the jump button is pressed and the player is grounded then the player should jump.
         string controlAccess = Controls.GetControlValue(Controls.Input.Jump, this.control_id);
-        //Debug.Log(controlAccess);
-		if(Input.GetButtonDown(controlAccess) && grounded)
+		if (Input.GetButtonDown (controlAccess) && !doubleJumpUsed) {
 			jump = true;
+			if (!grounded) {	// if the player jumps but is already in the air, make double jump
+				doubleJumpUsed = true;
+			}
+		}
+		controlAccess = Controls.GetControlValue(Controls.Input.Action, this.control_id);
+		if (Input.GetButtonDown (controlAccess) && !stunned && falling) {
+			Debug.Log ("rolling in the deep");
+			StartCoroutine(rollPlayer (72));
+		}
 	}
 
 
@@ -53,13 +64,10 @@ public class PlayerControl : MonoBehaviour
 	{
         // Cache the horizontal input.
         string controlAccess = Controls.GetControlValue(Controls.Input.Horizontal, this.control_id);
-        //Debug.Log(controlAccess);
         float h = Input.GetAxis(controlAccess);
-		if (h < 0.1f && h > -0.1f && grounded) {
+		if (h < 0.1f && h > -0.1f && Mathf.Approximately(rigidbody.velocity.y, 0f)) {
 			rigidbody.velocity = Vector2.zero;
-			rigidbody.angularVelocity = 0f;	
-			if(!rigidbody.velocity.Equals(Vector2.zero))
-				Debug.Log (rigidbody.velocity);
+			rigidbody.angularVelocity = 0f;
 		}
 
 		// The Speed animator parameter is set to the absolute value of the horizontal input.
@@ -68,8 +76,7 @@ public class PlayerControl : MonoBehaviour
 		// If the player is changing direction (h has a different sign to velocity.x) or hasn't reached maxSpeed yet...
 		if (h * rigidbody.velocity.x < maxSpeed) {
 			// ... add a force to the player.
-			//GetComponent<Rigidbody2D>().AddForce(Vector2.right * h * moveForce);
-			AddForce (Vector2.right * h * moveForce, ForceMode.Impulse);
+			if(!stunned) AddForce (Vector2.right * h * moveForce, ForceMode.Impulse);
 		}
 
 		// If the player's horizontal velocity is greater than the maxSpeed...
@@ -80,28 +87,58 @@ public class PlayerControl : MonoBehaviour
 		// If the input is moving the player right and the player is facing left...
 		if(h > 0 && !facingRight)
 			// ... flip the player.
-			Flip();
+			flipPlayersDirection();
 		// Otherwise if the input is moving the player left and the player is facing right...
 		else if(h < 0 && facingRight)
 			// ... flip the player.
-			Flip();
+			flipPlayersDirection();
 
 		anim.SetBool ("Fall", !grounded);
 		anim.SetBool ("Jump", !grounded && rigidbody.velocity.y > 0);
 
 		// If the player should jump...
-		if(jump)
-		{
+		if(jump) {
 			// Add a vertical force to the player.
-			//GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, jumpForce));
-			AddForce(new Vector2(0f, jumpForce), ForceMode.Impulse);
-
-			// Make sure the player can't jump again until the jump conditions from Update are satisfied.
+			if(!stunned) AddForce(new Vector2(0f, jumpForce), ForceMode.Impulse);
 			jump = false;
+		}
+		anim.SetBool ("Roll", rolling);
+	}
+
+	private void checkIfGrounded(){
+		// The player is grounded if a linecast to the groundcheck position hits anything on the ground layer.4
+		if (Physics2D.Linecast (transform.position - collidersHalfWidth, groundCheck.position - collidersHalfWidth, 1 << LayerMask.NameToLayer ("Ground")) ||
+			Physics2D.Linecast (transform.position + collidersHalfWidth, groundCheck.position + collidersHalfWidth, 1 << LayerMask.NameToLayer ("Ground"))) {
+			grounded = true;
+			doubleJumpUsed = false;
+			falling = false;
+		} else {
+			grounded = false;
 		}
 	}
 
-	void Flip ()
+	private void checkFallsHeight(){
+		// stun if the player falls from a certain height
+		if (grounded) {
+			if (Mathf.Abs (transform.position.y - highestJumpXValue) > saveJumpHeight  && !rolling) {
+				rigidbody.velocity = Vector2.zero;
+				Debug.Log ("stun");
+				StartCoroutine (stunPlayer (15)); // stun for number of frames
+				anim.SetTrigger ("Landing");
+			}
+			highestJumpXValue = transform.position.y;
+		}
+		// otherwise calculate the height of the fall
+		else {
+			if (transform.position.y > highestJumpXValue) {
+				highestJumpXValue = transform.position.y;
+				falling = false;
+			} else
+				falling = true;
+		}
+	}
+
+	void flipPlayersDirection ()
 	{
 		// Switch the way the player is labelled as facing.
 		facingRight = !facingRight;
@@ -110,6 +147,26 @@ public class PlayerControl : MonoBehaviour
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
 		transform.localScale = theScale;
+	}
+
+	private IEnumerator stunPlayer(int frameCount) {
+		stunned = true;
+		while (frameCount > 0)
+		{
+			frameCount--;
+			yield return null;
+		}
+		stunned = false;
+	}
+
+	private IEnumerator rollPlayer(int frameCount) {
+		rolling = true;
+		while (frameCount > 0)
+		{
+			frameCount--;
+			yield return null;
+		}
+		rolling = false;
 	}
 
 	public void AddForce (Vector2 force, ForceMode mode ) {

@@ -6,8 +6,9 @@ public class ParticipantManager : MonoBehaviour {
 
     public ArrayList participants;
     public GameObject partipantPrefab;
-    CameraController camController;
 
+    private Camera cam;
+    private FollowCamera followCam;
     private int numOfPlayers;
 
     public static ParticipantManager instance { get; private set; }
@@ -22,24 +23,30 @@ public class ParticipantManager : MonoBehaviour {
     void Start () {
         this.numOfPlayers = 0;
         participants = new ArrayList();
-        camController = GetComponent("CameraController") as CameraController;
+        cam = GameObject.FindWithTag("myCamera").GetComponent <Camera> ();
+        //Debug.Log("cam " + cam.GetType());
+        followCam = cam.GetComponent("FollowCamera") as FollowCamera;
+        //Debug.Log("followCam " + followCam.GetType());
 
     }
 	
 	// Update is called once per frame
 	void Update () {
+
+        if (participants.Count != 0)
+        {
+            //Debug.Log("Find leading Player");
+            Participant leader = getLeadingParticipant();
+            followCam.target = leader.transform.Find("Character").gameObject;
+        }
+
         if (Input.GetKeyDown(KeyCode.N))
         {
             //Debug.Log("Add new Particpant");
             AddParticipant();
         }
 
-        if (participants.Count != 0)
-        {
-            //Debug.Log("Find leading Player");
-            Participant leader = getLeadingParticipant();
-            camController.leadingPlayer = leader.gameObject;
-        }
+
 
 
     }
@@ -70,12 +77,9 @@ public class ParticipantManager : MonoBehaviour {
                             partipantPrefab.transform.position,
                             partipantPrefab.transform.rotation) as GameObject;
 
-        //Debug.Log("Type of clone "+ clone.GetType());
-
         numOfPlayers++; 
 
         Participant part = clone.GetComponent("Participant") as Participant;
-        //Debug.Log("Type of part " + part.GetType());
 
         part.setId(numOfPlayers);
         participants.Add(part);
