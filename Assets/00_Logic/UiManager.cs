@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
+using System;
+using UnityEngine.SceneManagement;
 
 public class UiManager : MonoBehaviour {
 
@@ -11,9 +14,14 @@ public class UiManager : MonoBehaviour {
 
     public GameObject joinLabel;
     public GameObject startLabel;
+    public GameObject timeLeftLabel;
+
+    private bool startPhase;
+    private double timeLeftUntilStart = 5;
 
     // Use this for initialization
     void Start () {
+        startPhase = false;
         playerLabels = new GameObject[4];
         playerLabels[0] = player1Label;
         playerLabels[1] = player2Label;
@@ -26,47 +34,77 @@ public class UiManager : MonoBehaviour {
             playerLabels[i].SetActive(false);            
         }
         joinLabel.SetActive(false);
+        timeLeftLabel.SetActive(false);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        for (int i = 1; i <= 4; i++)
+        if (!startPhase)
         {
-            string controlAccess = Controls.GetControlValue(Controls.Input.Jump, i);
-            if (Input.GetButtonDown(controlAccess))
+            for (int i = 1; i <= 4; i++)
             {
-                Debug.Log(controlAccess + " pressed");
-                playerLabels[i-1].SetActive(true);
+                string controlAccess = Controls.GetControlValue(Controls.Input.Jump, i);
+                if (Input.GetButtonDown(controlAccess))
+                {
+                    Debug.Log(controlAccess + " pressed");
+                    playerLabels[i - 1].SetActive(true);
+                }
+            }
+
+            for (int i = 1; i <= 4; i++)
+            {
+                string controlAccess = Controls.GetControlValue(Controls.Input.Attack, i);
+                if (Input.GetButtonDown(controlAccess))
+                {
+                    Debug.Log(controlAccess + " pressed");
+                    playerLabels[i - 1].SetActive(false);
+                }
+            }
+
+
+            int curentNumOfPlayers = numOfActivePlayer();
+            if (curentNumOfPlayers == 0)
+            {
+                joinLabel.SetActive(true);
+                startLabel.SetActive(false);
+            }
+            if (curentNumOfPlayers == 1)
+            {
+                joinLabel.SetActive(false);
+                startLabel.SetActive(false);
+            }
+            if (curentNumOfPlayers >= 2)
+            {
+                joinLabel.SetActive(false);
+                startLabel.SetActive(true);
+            }
+
+            if (Input.GetButtonDown("Start"))
+            {
+                Debug.Log("Start Button pressed");
+                if (curentNumOfPlayers >= 2)
+                {
+                    //game can start
+                    startPhase = true;
+                    timeLeftLabel.SetActive(true);
+                    startLabel.SetActive(false);
+                }
             }
         }
-
-        for (int i = 1; i <= 4; i++)
+        else
         {
-            string controlAccess = Controls.GetControlValue(Controls.Input.Attack, i);
-            if (Input.GetButtonDown(controlAccess))
+            //inside the start phase
+            timeLeftUntilStart -= Time.deltaTime;
+            timeLeftLabel.GetComponent<Text>().text = String.Format("{0:0.00}", timeLeftUntilStart);
+
+            if (timeLeftUntilStart < 0)
             {
-                Debug.Log(controlAccess + " pressed");
-                playerLabels[i - 1].SetActive(false);
+                //make scenechange
+                timeLeftLabel.GetComponent<Text>().text = "Start";
+                //SceneManager.LoadScene(3, LoadSceneMode.Single);
             }
-        }
 
-
-        int curentNumOfPlayers = numOfActivePlayer();
-        if (curentNumOfPlayers == 0)
-        {
-            joinLabel.SetActive(true);
-            startLabel.SetActive(false);
-        }
-        if (curentNumOfPlayers == 1)
-        {
-            joinLabel.SetActive(false);
-            startLabel.SetActive(false);
-        }
-        if (curentNumOfPlayers >= 2)
-        {
-            joinLabel.SetActive(false);
-            startLabel.SetActive(true);
         }
     }
 
