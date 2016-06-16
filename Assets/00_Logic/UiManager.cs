@@ -29,7 +29,7 @@ public class UiManager : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         for (int i = 1; i <= 4; i++)
         {
@@ -37,21 +37,35 @@ public class UiManager : MonoBehaviour {
             if (Input.GetButtonDown(controlAccess))
             {
                 Debug.Log(controlAccess + " pressed");
-                playerLabels[i].SetActive(true);
+                playerLabels[i-1].SetActive(true);
             }
         }
+
+        for (int i = 1; i <= 4; i++)
+        {
+            string controlAccess = Controls.GetControlValue(Controls.Input.Attack, i);
+            if (Input.GetButtonDown(controlAccess))
+            {
+                Debug.Log(controlAccess + " pressed");
+                playerLabels[i - 1].SetActive(false);
+            }
+        }
+
+
         int curentNumOfPlayers = numOfActivePlayer();
         if (curentNumOfPlayers == 0)
         {
             joinLabel.SetActive(true);
             startLabel.SetActive(false);
         }
-        else
+        if (curentNumOfPlayers == 1)
         {
             joinLabel.SetActive(false);
+            startLabel.SetActive(false);
         }
         if (curentNumOfPlayers >= 2)
         {
+            joinLabel.SetActive(false);
             startLabel.SetActive(true);
         }
     }
