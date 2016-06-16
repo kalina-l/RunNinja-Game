@@ -5,9 +5,8 @@ public class PlayerControl : MonoBehaviour
 {
 	[HideInInspector]
 	public bool facingRight = true;			// For determining which way the player is currently facing.
-	[HideInInspector]
-	public bool jump = false;				// Condition for whether the player should jump.
-	public bool rolling = false;
+	private bool jump = false;				// Condition for whether the player should jump.
+	private bool rolling = false;
 	private Vector3 collidersHalfWidth;
 
     public int control_id = 1;
@@ -55,7 +54,11 @@ public class PlayerControl : MonoBehaviour
 		controlAccess = Controls.GetControlValue(Controls.Input.Action, this.control_id);
 		if (Input.GetButtonDown (controlAccess) && !stunned && falling) {
 			Debug.Log ("rolling in the deep");
-			StartCoroutine(rollPlayer (72));
+			anim.SetTrigger ("Roll");
+		}
+		controlAccess = Controls.GetControlValue(Controls.Input.Attack, this.control_id);
+		if (Input.GetButtonDown (controlAccess)) {
+			anim.SetTrigger ("Attack");
 		}
 	}
 
@@ -102,7 +105,6 @@ public class PlayerControl : MonoBehaviour
 			if(!stunned) AddForce(new Vector2(0f, jumpForce), ForceMode.Impulse);
 			jump = false;
 		}
-		anim.SetBool ("Roll", rolling);
 	}
 
 	private void checkIfGrounded(){
@@ -157,16 +159,6 @@ public class PlayerControl : MonoBehaviour
 			yield return null;
 		}
 		stunned = false;
-	}
-
-	private IEnumerator rollPlayer(int frameCount) {
-		rolling = true;
-		while (frameCount > 0)
-		{
-			frameCount--;
-			yield return null;
-		}
-		rolling = false;
 	}
 
 	public void AddForce (Vector2 force, ForceMode mode ) {
