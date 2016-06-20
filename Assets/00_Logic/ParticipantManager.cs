@@ -40,13 +40,17 @@ public class ParticipantManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        int numOfActivePlayers = this.getNumOIfActivePlayers();
+
         //check If somebody won the game
-        if (participants.Count == 1)
+        if (numOfActivePlayers == 1)
         {
             //end of game
+            Debug.Log("end of game");
+            endOfGame();
         }
 
-        else if (participants.Count != 0)
+        else if (numOfActivePlayers != 0)
         {
             //remove players
             removeOuterParticipants();
@@ -54,8 +58,21 @@ public class ParticipantManager : MonoBehaviour {
 
             //Debug.Log("Find leading Player");
             Participant leader = getLeadingParticipant();
-            followCam.target = leader.transform.Find("Character").gameObject;
+            if (leader == null)
+            {
+                followCam.target = cam.gameObject;
+            }
+            else
+            {
+                followCam.target = leader.transform.Find("Character").gameObject;
+            }
+            
         }
+    }
+
+    private void endOfGame()
+    {
+        
     }
 
     private void removeOuterParticipants()
@@ -132,5 +149,18 @@ public class ParticipantManager : MonoBehaviour {
         p.isAlive = false;
         GameObject character = p.transform.Find("Character").gameObject;
         Destroy(character);
+    }
+
+    int getNumOIfActivePlayers()
+    {
+        int num = 0;
+        foreach (Participant p in participants)
+        {
+            if (p.isAlive)
+            {
+                num++;
+            }
+        }
+        return num;
     }
 }
