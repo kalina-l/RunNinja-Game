@@ -50,7 +50,7 @@ public class UiManager : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         if (!inGame)
         {

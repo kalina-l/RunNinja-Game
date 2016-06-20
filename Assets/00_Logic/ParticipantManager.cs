@@ -10,7 +10,6 @@ public class ParticipantManager : MonoBehaviour {
     private Camera cam;
     private FollowCamera followCam;
     private UiManager uiManager; // From Scene before
-    public int numOfPlayers;
 
     public static ParticipantManager instance { get; private set; }
 
@@ -41,23 +40,66 @@ public class ParticipantManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (participants.Count != 0)
+        //check If somebody won the game
+        if (participants.Count == 1)
         {
+            //end of game
+        }
+
+        else if (participants.Count != 0)
+        {
+            //remove players
+            removeOuterParticipants();
+
+
             //Debug.Log("Find leading Player");
             Participant leader = getLeadingParticipant();
             followCam.target = leader.transform.Find("Character").gameObject;
         }
     }
 
-    private Participant getLeadingParticipant()
+    private void removeOuterParticipants()
     {
-        Participant leader = (Participant)participants.ToArray()[0];
+        var pos = cam.transform.position;
+        //Debug.Log("Pos Cam " + pos);
+
+        var aspectRatio = cam.aspect;
+        //Debug.Log("aspectRatio " + aspectRatio);
+
+        var leftBounds = cam.transform.position.x - cam.orthographicSize*aspectRatio;
+        //Debug.Log("leftBounds " + leftBounds);
+
         foreach (Participant p in participants)
         {
-            Debug.Log(p.transform.Find("Character").position.x);
-            if (p.transform.Find("Character").position.x > leader.transform.Find("Character").position.x)
+            if (p.isAlive)
             {
-                leader = p;
+                var playerX = p.transform.Find("Character").position.x;
+                //Debug.Log("playerX "+ playerX);
+                if (playerX < leftBounds)
+                {
+                    //KILL
+                    RemoveParticipant(p);
+                }
+            }
+        }
+    }
+
+    private Participant getLeadingParticipant()
+    {
+        Participant leader = null;
+        foreach (Participant p in participants)
+        {
+            if (p.isAlive)
+            {
+                if (leader == null)
+                {
+                    leader = p;
+                }
+                //Debug.Log(p.transform.Find("Character").position.x);
+                else if (p.transform.Find("Character").position.x > leader.transform.Find("Character").position.x)
+                {
+                    leader = p;
+                }
             }
         }
         return leader;
@@ -75,7 +117,7 @@ public class ParticipantManager : MonoBehaviour {
                             partipantPrefab.transform.position,
                             partipantPrefab.transform.rotation) as GameObject;
 
-        numOfPlayers++; 
+
 
         Participant part = clone.GetComponent("Participant") as Participant;
 
@@ -86,6 +128,9 @@ public class ParticipantManager : MonoBehaviour {
     void RemoveParticipant(Participant p)
     {
         //TODO Remove from scene
-        //participants.Remove(p);
+
+        p.isAlive = false;
+        GameObject character = p.transform.Find("Character").gameObject;
+        Destroy(character);
     }
 }
