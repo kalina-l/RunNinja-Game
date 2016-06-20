@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.SceneManagement;
 
 public class ParticipantManager : MonoBehaviour {
 
     public ArrayList participants;
     public GameObject partipantPrefab;
+    private bool activeGame = false;
 
     private Camera cam;
     private FollowCamera followCam;
@@ -24,6 +26,7 @@ public class ParticipantManager : MonoBehaviour {
         participants = new ArrayList();
         uiManager = GameObject.FindWithTag("myUIController").GetComponent<UiManager>();
         bool[] playerIDs = uiManager.playerToPlay;
+        activeGame = true;
         for (int i = 0; i < playerIDs.Length; i++)
         {
             if (playerIDs[i])
@@ -40,39 +43,43 @@ public class ParticipantManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        int numOfActivePlayers = this.getNumOIfActivePlayers();
-
-        //check If somebody won the game
-        if (numOfActivePlayers == 1)
+        if (activeGame)
         {
-            //end of game
-            Debug.Log("end of game");
-            endOfGame();
-        }
+            int numOfActivePlayers = this.getNumOIfActivePlayers();
 
-        else if (numOfActivePlayers != 0)
-        {
-            //remove players
-            removeOuterParticipants();
-
-
-            //Debug.Log("Find leading Player");
-            Participant leader = getLeadingParticipant();
-            if (leader == null)
+            //check If somebody won the game
+            if (numOfActivePlayers == 1)
             {
-                followCam.target = cam.gameObject;
+                //end of game
+                Debug.Log("end of game");
+                endOfGame();
             }
-            else
+
+            else if (numOfActivePlayers != 0)
             {
-                followCam.target = leader.transform.Find("Character").gameObject;
-            }
-            
+                //remove players
+                removeOuterParticipants();
+
+
+                //Debug.Log("Find leading Player");
+                Participant leader = getLeadingParticipant();
+                if (leader == null)
+                {
+                    followCam.target = cam.gameObject;
+                }
+                else
+                {
+                    followCam.target = leader.transform.Find("Character").gameObject;
+                }
+
+            } 
         }
     }
 
     private void endOfGame()
     {
-        
+        activeGame = false;
+        SceneManager.LoadScene(4, LoadSceneMode.Additive);
     }
 
     private void removeOuterParticipants()
@@ -101,7 +108,7 @@ public class ParticipantManager : MonoBehaviour {
         }
     }
 
-    private Participant getLeadingParticipant()
+    public Participant getLeadingParticipant()
     {
         Participant leader = null;
         foreach (Participant p in participants)
