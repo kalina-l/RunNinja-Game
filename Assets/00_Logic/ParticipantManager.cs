@@ -9,7 +9,8 @@ public class ParticipantManager : MonoBehaviour {
 
     private Camera cam;
     private FollowCamera followCam;
-    private int numOfPlayers;
+    private UiManager uiManager; // From Scene before
+    public int numOfPlayers;
 
     public static ParticipantManager instance { get; private set; }
 
@@ -21,13 +22,20 @@ public class ParticipantManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        this.numOfPlayers = 0;
         participants = new ArrayList();
-        cam = GameObject.FindWithTag("myCamera").GetComponent <Camera> ();
-        //Debug.Log("cam " + cam.GetType());
-        followCam = cam.GetComponent("FollowCamera") as FollowCamera;
-        //Debug.Log("followCam " + followCam.GetType());
+        uiManager = GameObject.FindWithTag("myUIController").GetComponent<UiManager>();
+        bool[] playerIDs = uiManager.playerToPlay;
+        for (int i = 0; i < playerIDs.Length; i++)
+        {
+            if (playerIDs[i])
+            {
+                //instantiate that one
+                AddParticipant(i+1);
 
+            }
+        }       
+        cam = GameObject.FindWithTag("myCamera").GetComponent <Camera> ();
+        followCam = cam.GetComponent("FollowCamera") as FollowCamera;
     }
 	
 	// Update is called once per frame
@@ -39,16 +47,6 @@ public class ParticipantManager : MonoBehaviour {
             Participant leader = getLeadingParticipant();
             followCam.target = leader.transform.Find("Character").gameObject;
         }
-
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            //Debug.Log("Add new Particpant");
-            AddParticipant();
-        }
-
-
-
-
     }
 
     private Participant getLeadingParticipant()
@@ -70,7 +68,7 @@ public class ParticipantManager : MonoBehaviour {
 
     }
 
-    void AddParticipant()
+    void AddParticipant(int id)
     {
         GameObject clone;
         clone = Instantiate(partipantPrefab,
@@ -81,7 +79,7 @@ public class ParticipantManager : MonoBehaviour {
 
         Participant part = clone.GetComponent("Participant") as Participant;
 
-        part.setId(numOfPlayers);
+        part.setId(id);
         participants.Add(part);
     }
 
