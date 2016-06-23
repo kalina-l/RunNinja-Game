@@ -17,7 +17,7 @@ public class PlayerControl : MonoBehaviour
 	public AudioClip[] jumpClips;			// Array of clips for when the player jumps.
 	public float jumpForce = 1000f;			// Amount of force added when the player jumps.
 	public float saveJumpHeight;
-	private bool resetRunInput;
+	public bool blockJumpMovement;
 
 	private Transform groundCheck;			// A position marking where to check if the player is grounded.
 	private bool grounded = false;			// Whether or not the player is grounded.
@@ -67,7 +67,6 @@ public class PlayerControl : MonoBehaviour
 			anim.SetTrigger ("Attack");
 			attacking = true;
 		}
-
 		if (anim.GetCurrentAnimatorStateInfo (0).IsName ("Roll"))
 			rolling = true;
 		else
@@ -76,6 +75,8 @@ public class PlayerControl : MonoBehaviour
 			attacking = true;
 		else
 			attacking = false;
+		if (anim.GetCurrentAnimatorStateInfo (0).IsName ("Fall"))
+			blockJumpMovement = false;
 
         if (Input.GetButtonDown (Controls.GetControlValue(Controls.Input.Action, this.control_id)))
         {
@@ -93,7 +94,7 @@ public class PlayerControl : MonoBehaviour
         string controlAccess = Controls.GetControlValue(Controls.Input.Horizontal, this.control_id);
         float h = Input.GetAxis(controlAccess);
 		// If the player doesn't run, jump or attack, set his velocity to 0 (to prevent sliding)
-		if (h < 0.1f && h > -0.1f && Mathf.Approximately (rigidbody.velocity.y, 0f)) {
+		if (h < 0.2f && h > -0.2f && Mathf.Approximately (rigidbody.velocity.y, 0f)) {
 			if (!attacking) {
 				rigidbody.velocity = Vector2.zero;
 				rigidbody.angularVelocity = 0f;
@@ -103,9 +104,8 @@ public class PlayerControl : MonoBehaviour
 				else
 					AddForce (-Vector2.right * 2, ForceMode.Impulse);
 			}
-			resetRunInput = false;
 		}
-		if (resetRunInput)
+		if (blockJumpMovement)
 			h = 0;
 
 		// The Speed animator parameter is set to the absolute value of the horizontal input.
@@ -131,9 +131,6 @@ public class PlayerControl : MonoBehaviour
 			// ... flip the player.
 			flipPlayersDirection();
 
-		anim.SetBool ("Fall", !grounded);
-		anim.SetBool ("Jump", !grounded && rigidbody.velocity.y > 0);
-
 		// If the player should jump...
 		if(jump) {
 			if (closeToWall() && !grounded) {
@@ -144,6 +141,10 @@ public class PlayerControl : MonoBehaviour
 			}
 			jump = false;
 		}
+
+		anim.SetBool ("Fall", !grounded);
+		anim.SetBool ("Jump", !grounded && rigidbody.velocity.y > 0);
+
 	}
 
 	private void checkIfGrounded(){
@@ -181,6 +182,9 @@ public class PlayerControl : MonoBehaviour
 
 	void flipPlayersDirection ()
 	{
+		if (stunned || blockJumpMovement)
+			return;
+		
 		// Switch the way the player is labelled as facing.
 		facingRight = !facingRight;
 
@@ -193,10 +197,8 @@ public class PlayerControl : MonoBehaviour
 	private bool closeToWall(){
 		if (Physics2D.Linecast (groundCheck.position, groundCheck.position + collidersHalfWidth + new Vector3 (2, 0, 0), 1 << LayerMask.NameToLayer ("Ground")) ||
 			Physics2D.Linecast (groundCheck.position, groundCheck.position -collidersHalfWidth - new Vector3 (2, 0, 0), 1 << LayerMask.NameToLayer ("Ground"))) {
-			Debug.Log ("Close to wall");
 			return true;
 		} else {
-			Debug.Log ("Far from wall");
 			return false;
 		}
 	}
@@ -205,11 +207,34 @@ public class PlayerControl : MonoBehaviour
 		Debug.Log ("Wall Jump!");
 		doubleJumpUsed = false;
 		flipPlayersDirection ();
-		StartCoroutine (stunPlayer (50));
-		if(facingRight)
-			AddForce (new Vector2 (jumpForce*3, jumpForce*1.5f), ForceMode.Impulse);
-		else AddForce (new Vector2 (-jumpForce*3, jumpForce*1.5f), ForceMode.Impulse);
-		//resetRunInput = true;
+		//rigidbody.velocity = new Vector2(-rigidbody.velocity.x, rigidbody.velocity.y);
+		if (facingRight){
+			//AddForce (new Vector2 (0, 5000), ForceMode.Acceleration);
+			//AddForce (new Vector2 (200, 0), ForceMode.VelocityChange);
+			StartCoroutine (applyJumpWallForce(19, 1, 12f));
+			//AddForce (new Vector2 (jumpForce*3, jumpForce*1.5f), ForceMode.Impulse);
+		}
+		else {
+			//AddForce (new Vector2 (0, 5000), ForceMode.Acceleration);
+			//AddForce (new Vector2 (-200, 0), ForceMode.VelocityChange);
+			StartCoroutine (applyJumpWallForce(19, -1, 	12f));
+			//AddForce (new Vector2 (-jumpForce*3, jumpForce*1.5f), ForceMode.Impulse);
+		}
+		blockJumpMovement = true;
+	}
+
+	private IEnumerator applyJumpWallForce(int frameCount, int dir, float jumpForce){
+		float verticalForce = jumpForce;
+		//StartCoroutine (stunPlayer (frameCount));
+		while (frameCount > 0)
+		{
+			frameCount--;
+			jumpForce-=0.5f;
+			if (jumpForce < 1)
+				jumpForce = 1;
+			AddForce (new Vector2 (dir*verticalForce, jumpForce), ForceMode.Impulse);
+			yield return null;
+		}
 	}
 
 	private IEnumerator stunPlayer(int frameCount) {
@@ -261,4 +286,5 @@ public class PlayerControl : MonoBehaviour
     {
         currentPowerUp = null;
     }
+
 }
