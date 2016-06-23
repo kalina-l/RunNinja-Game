@@ -27,6 +27,8 @@ public class PlayerControl : MonoBehaviour
 	private Animator anim;					// Reference to the player's animator component.
 	private Rigidbody2D rigidbody;
 
+    private IPowerUp currentPowerUp; 
+
 	void Awake()
 	{
 		// Setting up references.
@@ -51,7 +53,7 @@ public class PlayerControl : MonoBehaviour
 				doubleJumpUsed = true;
 			}
 		}
-		controlAccess = Controls.GetControlValue(Controls.Input.Action, this.control_id);
+		controlAccess = Controls.GetControlValue(Controls.Input.Roll, this.control_id);
 		if (Input.GetButtonDown (controlAccess) && !stunned && falling) {
 			Debug.Log ("rolling in the deep");
 			anim.SetTrigger ("Roll");
@@ -60,6 +62,14 @@ public class PlayerControl : MonoBehaviour
 		if (Input.GetButtonDown (controlAccess)) {
 			anim.SetTrigger ("Attack");
 		}
+
+        if (Input.GetButtonDown (Controls.GetControlValue(Controls.Input.Action, this.control_id)))
+        {
+            if (currentPowerUp != null)
+            {
+                currentPowerUp.Activate();
+            }
+        }
 	}
 
 
@@ -178,4 +188,26 @@ public class PlayerControl : MonoBehaviour
 			break;
 		}
 	}
+
+    //Boosts the player in the direction he is facing
+    public void BoostPlayer(Vector2 force)
+    {
+        if (facingRight)
+            force.x = Mathf.Abs(force.x);
+        else
+            force.x = Mathf.Abs(force.x) * -1;
+
+        AddForce(force, ForceMode.Force);
+    }
+
+    public void AddPowerUp(IPowerUp powerUp)
+    {
+        currentPowerUp = powerUp;
+        powerUp.Setup(this);
+    }
+
+    public void RemovePowerUp()
+    {
+        currentPowerUp = null;
+    }
 }
