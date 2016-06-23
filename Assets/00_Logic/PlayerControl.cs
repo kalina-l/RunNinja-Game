@@ -210,4 +210,9 @@ public class PlayerControl : MonoBehaviour
     {
         currentPowerUp = null;
     }
+
+    public void StunPlayer()
+    {
+        StartCoroutine(stunPlayer(15));
+    }
 }
