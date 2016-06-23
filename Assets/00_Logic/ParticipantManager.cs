@@ -8,6 +8,8 @@ public class ParticipantManager : MonoBehaviour {
     public ArrayList participants;
     public GameObject partipantPrefab;
     private bool activeGame = false;
+    private bool preFreeze = true;
+    private float preFrezzeTime = 3;
 
     private Camera cam;
     private FollowCamera followCam;
