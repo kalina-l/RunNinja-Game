@@ -8,7 +8,9 @@ public abstract class Controls  {
         Horizontal,
         Jump,
         Action, //powerups
-        Attack  //attack
+        Attack,  //attack
+        Roll,
+        Start
     };
 
     public static string GetControlValue(Input input, int id)
