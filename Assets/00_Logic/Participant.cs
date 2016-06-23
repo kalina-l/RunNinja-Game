@@ -7,6 +7,8 @@ public class Participant : MonoBehaviour {
     public string alias;
     public bool isAlive;
 
+    public SpriteRenderer renderer;
+
     // Use this for initialization
     void Start () {
         isAlive = true;
@@ -26,5 +28,7 @@ public class Participant : MonoBehaviour {
         PlayerControl pc = go.GetComponent("PlayerControl") as PlayerControl;
         //Debug.Log("pc " + pc.GetType());
         pc.control_id = id;
+
+        renderer.material = ParticipantManager.instance.playerMaterials[value-1];
     }
 }

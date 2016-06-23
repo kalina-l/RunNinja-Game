@@ -15,6 +15,8 @@ public class ParticipantManager : MonoBehaviour {
 
     public static ParticipantManager instance { get; private set; }
 
+    public Material[] playerMaterials;
+
     void Awake()
     {
         instance = this;
@@ -143,7 +145,7 @@ public class ParticipantManager : MonoBehaviour {
 
 
 
-        Participant part = clone.GetComponent("Participant") as Participant;
+        Participant part = clone.GetComponent<Participant>();
 
         part.setId(id);
         participants.Add(part);
