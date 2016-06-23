@@ -9,5 +9,13 @@ public class SwordCollider : MonoBehaviour {
         {
             other.GetComponent<Obstacle>().Destroy();
         }
+
+        if (other.tag == "Player")
+        {
+            if (other.transform != transform.parent)
+            {
+                other.GetComponent<PlayerControl>().StunPlayer();
+            }
+        }
     }
 }
