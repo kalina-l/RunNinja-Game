@@ -29,9 +29,9 @@ public class PlayerControl : MonoBehaviour
 	private Animator anim;					// Reference to the player's animator component.
 	private Rigidbody2D rigidbody;
 
-    private IPowerUp currentPowerUp;
+    private IPowerUp currentPowerUp; 
 
-    public Transform ProjectilePoint;
+	public Transform ProjectilePoint;
 
 	void Awake()
 	{
@@ -77,7 +77,7 @@ public class PlayerControl : MonoBehaviour
 			attacking = true;
 		else
 			attacking = false;
-		if (anim.GetCurrentAnimatorStateInfo (0).IsName ("Fall"))
+		if (anim.GetCurrentAnimatorStateInfo (0).IsName ("Fall") || anim.GetCurrentAnimatorStateInfo (0).IsName ("Idle"))
 			blockJumpMovement = false;
 
         if (Input.GetButtonDown (Controls.GetControlValue(Controls.Input.Action, this.control_id)))
@@ -289,8 +289,7 @@ public class PlayerControl : MonoBehaviour
         currentPowerUp = null;
     }
 
-    public void StunPlayer()
-    {
-        StartCoroutine(stunPlayer(15));
-    }
+	public void StunPlayer(){
+		StartCoroutine (stunPlayer(15));
+	}
 }
