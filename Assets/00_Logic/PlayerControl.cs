@@ -27,7 +27,9 @@ public class PlayerControl : MonoBehaviour
 	private Animator anim;					// Reference to the player's animator component.
 	private Rigidbody2D rigidbody;
 
-    private IPowerUp currentPowerUp; 
+    private IPowerUp currentPowerUp;
+
+    public Transform ProjectilePoint;
 
 	void Awake()
 	{
