@@ -30,8 +30,8 @@ public class LevelLooper : MonoBehaviour {
         {
             float leaderX = leader.transform.Find("Character").position.x;
             float levelX = lastInsertedLevel.transform.position.x + this.offsetOfLevel - this.widthOfLevel/2;
-            Debug.Log("leaderX "+ leaderX);
-            Debug.Log("levelX " + levelX);
+            //Debug.Log("leaderX "+ leaderX);
+            //Debug.Log("levelX " + levelX);
             if (leaderX >= levelX)
             {
                 Vector3 lastPos = lastInsertedLevel.transform.position;

@@ -17,6 +17,7 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
 
     public void Activate()
     {
+        //test
         Debug.Log("Speed Booooooost!!!!");
 
         //something happens when I activate this
