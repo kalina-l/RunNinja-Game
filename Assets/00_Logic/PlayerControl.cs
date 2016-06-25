@@ -17,15 +17,16 @@ public class PlayerControl : MonoBehaviour
 	public AudioClip[] jumpClips;			// Array of clips for when the player jumps.
 	public float jumpForce = 1000f;			// Amount of force added when the player jumps.
 	public float saveJumpHeight;
+	private bool canAttack = true;
 	// public bool blockJumpMovement;
 
 	private Transform groundCheck;			// A position marking where to check if the player is grounded.
 	private Transform wallJumpCheck;
 	private bool grounded = false;			// Whether or not the player is grounded.
-	public bool doubleJumpUsed;
-	public bool blockDoubleJump;
-	public bool wallJumpUsed;
-	public bool falling;
+	private bool doubleJumpUsed;
+	private bool blockDoubleJump;
+	private bool wallJumpUsed;
+	private bool falling;
 	private float highestJumpXValue = int.MinValue;
 	private bool stunned;
 
@@ -71,8 +72,10 @@ public class PlayerControl : MonoBehaviour
 		}
 		controlAccess = Controls.GetControlValue(Controls.Input.Attack, this.control_id);
 		if (Input.GetButtonDown (controlAccess)) {
-			anim.SetTrigger ("Attack");
-			attacking = true;
+			if (canAttack) {
+				anim.SetTrigger ("Attack");
+				StartCoroutine(addAttackPenalty ());
+			}
 		}
 		if (anim.GetCurrentAnimatorStateInfo (0).IsName ("Roll"))
 			rolling = true;
@@ -264,6 +267,12 @@ public class PlayerControl : MonoBehaviour
 			yield return null;
 		}
 		stunned = false;
+	}
+
+	private IEnumerator addAttackPenalty() {
+		canAttack = false;
+		yield return new WaitForSeconds(2);
+		canAttack = true;
 	}
 
 	public void AddForce (Vector2 force, ForceMode mode ) {
