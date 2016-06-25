@@ -17,11 +17,14 @@ public class PlayerControl : MonoBehaviour
 	public AudioClip[] jumpClips;			// Array of clips for when the player jumps.
 	public float jumpForce = 1000f;			// Amount of force added when the player jumps.
 	public float saveJumpHeight;
-	public bool blockJumpMovement;
+	// public bool blockJumpMovement;
 
 	private Transform groundCheck;			// A position marking where to check if the player is grounded.
+	private Transform wallJumpCheck;
 	private bool grounded = false;			// Whether or not the player is grounded.
-	private bool doubleJumpUsed;
+	public bool doubleJumpUsed;
+	public bool blockDoubleJump;
+	public bool wallJumpUsed;
 	public bool falling;
 	private float highestJumpXValue = int.MinValue;
 	private bool stunned;
@@ -37,6 +40,7 @@ public class PlayerControl : MonoBehaviour
 	{
 		// Setting up references.
 		groundCheck = transform.Find("groundCheck");
+		wallJumpCheck = transform.Find ("wallJumpCheck");
 		anim = GetComponent<Animator>();
 		Vector2 collidersSize = GetComponent<BoxCollider2D> ().size;
 		rigidbody = GetComponent<Rigidbody2D> ();
@@ -46,8 +50,12 @@ public class PlayerControl : MonoBehaviour
 
 	void Update()
 	{
-		Debug.DrawRay(groundCheck.position, collidersHalfWidth + new Vector3 (2, 0, 0), Color.red, 1.0f, true);
-		Debug.DrawRay(groundCheck.position, -collidersHalfWidth - new Vector3 (2, 0, 0), Color.red, 1.0f, true);
+		// wall jump check
+		Debug.DrawRay(wallJumpCheck.position, collidersHalfWidth + new Vector3 (2, 0, 0), Color.red, 1.0f, true);
+		Debug.DrawRay(wallJumpCheck.position, -collidersHalfWidth - new Vector3 (2, 0, 0), Color.red, 1.0f, true);
+		//grounded check
+		Debug.DrawRay(transform.position - collidersHalfWidth, groundCheck.position - transform.position, Color.green, 5.0f, true);
+		Debug.DrawRay(transform.position + collidersHalfWidth, groundCheck.position - transform.position, Color.green, 5.0f, true);
 
 		checkIfGrounded ();
 		checkFallsHeight ();
@@ -56,9 +64,6 @@ public class PlayerControl : MonoBehaviour
         string controlAccess = Controls.GetControlValue(Controls.Input.Jump, this.control_id);
 		if (Input.GetButtonDown (controlAccess) && !doubleJumpUsed) {
 			jump = true;
-			if (!grounded) {	// if the player jumps but is already in the air, make double jump
-				doubleJumpUsed = true;
-			}
 		}
 		controlAccess = Controls.GetControlValue(Controls.Input.Roll, this.control_id);
 		if (Input.GetButtonDown (controlAccess) && !stunned && falling) {
@@ -77,8 +82,10 @@ public class PlayerControl : MonoBehaviour
 			attacking = true;
 		else
 			attacking = false;
-		if (anim.GetCurrentAnimatorStateInfo (0).IsName ("Fall") || anim.GetCurrentAnimatorStateInfo (0).IsName ("Idle"))
-			blockJumpMovement = false;
+		//if (anim.GetCurrentAnimatorStateInfo (0).IsName ("Idle"))
+		//		blockJumpMovement = false;
+		if (anim.GetCurrentAnimatorStateInfo (0).IsName ("Idle") || anim.GetCurrentAnimatorStateInfo (0).IsName ("Run"))
+			blockDoubleJump = false;
 
         if (Input.GetButtonDown (Controls.GetControlValue(Controls.Input.Action, this.control_id)))
         {
@@ -107,8 +114,8 @@ public class PlayerControl : MonoBehaviour
 					AddForce (-Vector2.right * 2, ForceMode.Impulse);
 			}
 		}
-		if (blockJumpMovement)
-			h = 0;
+		//if (blockJumpMovement)
+		//	h = 0;
 
 		// The Speed animator parameter is set to the absolute value of the horizontal input.
 		anim.SetFloat("Speed", Mathf.Abs(h));
@@ -125,19 +132,23 @@ public class PlayerControl : MonoBehaviour
 			rigidbody.velocity = new Vector2(Mathf.Sign(rigidbody.velocity.x) * maxSpeed, rigidbody.velocity.y);
 
 		// If the input is moving the player right and the player is facing left...
-		if(h > 0 && !facingRight)
+		if(h > 0 && !facingRight) // && !blockJumpMovement)
 			// ... flip the player.
 			flipPlayersDirection();
 		// Otherwise if the input is moving the player left and the player is facing right...
-		else if(h < 0 && facingRight)
+		else if(h < 0 && facingRight) // && !blockJumpMovement)
 			// ... flip the player.
 			flipPlayersDirection();
 
 		// If the player should jump...
 		if(jump) {
-			if (closeToWall() && !grounded) {
+			bool playerCloseToWall = closeToWall ();
+			if (playerCloseToWall && !grounded && !wallJumpUsed) {
 				wallJump ();
-			} else {
+			} else if (!playerCloseToWall && !grounded) {	// if the player jumps but is already in the air, make double jump
+				doubleJumpUsed = true;
+			}
+			if ((!playerCloseToWall || grounded) && !blockDoubleJump) {
 				if (!stunned)
 					AddForce (new Vector2 (0f, jumpForce), ForceMode.Impulse);
 			}
@@ -183,10 +194,7 @@ public class PlayerControl : MonoBehaviour
 	}
 
 	void flipPlayersDirection ()
-	{
-		if (stunned || blockJumpMovement)
-			return;
-		
+	{		
 		// Switch the way the player is labelled as facing.
 		facingRight = !facingRight;
 
@@ -197,32 +205,41 @@ public class PlayerControl : MonoBehaviour
 	}
 
 	private bool closeToWall(){
-		if (Physics2D.Linecast (groundCheck.position, groundCheck.position + collidersHalfWidth + new Vector3 (2, 0, 0), 1 << LayerMask.NameToLayer ("Ground")) ||
-			Physics2D.Linecast (groundCheck.position, groundCheck.position -collidersHalfWidth - new Vector3 (2, 0, 0), 1 << LayerMask.NameToLayer ("Ground"))) {
+		if (Physics2D.Linecast (wallJumpCheck.position, wallJumpCheck.position + collidersHalfWidth + new Vector3 (2, 0, 0), 1 << LayerMask.NameToLayer ("Ground")) ||
+			Physics2D.Linecast (wallJumpCheck.position, wallJumpCheck.position - collidersHalfWidth - new Vector3 (2, 0, 0), 1 << LayerMask.NameToLayer ("Ground"))) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
+	private IEnumerator resetWallJump(){
+		while (true) {
+			if (Physics2D.Linecast (wallJumpCheck.position, wallJumpCheck.position + collidersHalfWidth + new Vector3 (2, 0, 0), 1 << LayerMask.NameToLayer ("Ground")) ||
+			   Physics2D.Linecast (wallJumpCheck.position, wallJumpCheck.position - collidersHalfWidth - new Vector3 (2, 0, 0), 1 << LayerMask.NameToLayer ("Ground"))) {
+				yield return null;
+			} else {
+				wallJumpUsed = false;
+				break;
+			}
+		}
+	}
+
 	private void wallJump(){
 		Debug.Log ("Wall Jump!");
-		doubleJumpUsed = false;
-		flipPlayersDirection ();
-		//rigidbody.velocity = new Vector2(-rigidbody.velocity.x, rigidbody.velocity.y);
+		blockDoubleJump = true;
+		wallJumpUsed = true;
+		StartCoroutine (resetWallJump ());
+		//flipPlayersDirection (); // automatic jump with a button
 		if (facingRight){
-			//AddForce (new Vector2 (0, 5000), ForceMode.Acceleration);
-			//AddForce (new Vector2 (200, 0), ForceMode.VelocityChange);
-			StartCoroutine (applyJumpWallForce(19, 1, 12f));
-			//AddForce (new Vector2 (jumpForce*3, jumpForce*1.5f), ForceMode.Impulse);
+			AddForce (new Vector2 (-2000, 5000), ForceMode.Acceleration);
+			//StartCoroutine (applyJumpWallForce(19, 1, 12f)); // automatic jump with a button
 		}
 		else {
-			//AddForce (new Vector2 (0, 5000), ForceMode.Acceleration);
-			//AddForce (new Vector2 (-200, 0), ForceMode.VelocityChange);
-			StartCoroutine (applyJumpWallForce(19, -1, 	12f));
-			//AddForce (new Vector2 (-jumpForce*3, jumpForce*1.5f), ForceMode.Impulse);
+			AddForce (new Vector2 (2000, 5000), ForceMode.Acceleration);
+			//StartCoroutine (applyJumpWallForce(19, -1, 12f)); // automatic jump with a button
 		}
-		blockJumpMovement = true;
+		// blockJumpMovement = true;
 	}
 
 	private IEnumerator applyJumpWallForce(int frameCount, int dir, float jumpForce){
