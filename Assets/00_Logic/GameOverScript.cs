@@ -36,7 +36,7 @@ public class GameOverScript : MonoBehaviour {
                 {
                     Debug.Log(controlAccess + " pressed");
                     //Restart Game
-                    SceneManager.LoadScene(2, LoadSceneMode.Single);
+                    SceneManager.LoadScene("Menu", LoadSceneMode.Single);
                 }
             } 
         } else {

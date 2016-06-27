@@ -83,7 +83,7 @@ public class ParticipantManager : MonoBehaviour {
     private void endOfGame()
     {
         activeGame = false;
-        SceneManager.LoadScene(4, LoadSceneMode.Additive);
+        SceneManager.LoadScene("WinnerScene", LoadSceneMode.Additive);
     }
 
     private void removeOuterParticipants()
