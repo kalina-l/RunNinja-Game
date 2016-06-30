@@ -301,7 +301,7 @@ public class PlayerControl : MonoBehaviour
         else
             force.x = Mathf.Abs(force.x) * -1;
 
-        AddForce(force, ForceMode.Force);
+        AddForce(force, ForceMode.Impulse);
     }
 
     public void AddPowerUp(IPowerUp powerUp)
