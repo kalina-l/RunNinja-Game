@@ -8,6 +8,7 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
 
     public int starCount = 3;
     private int currentStars;
+    public Sprite icon;
 
     public void Setup(PlayerControl player)
     {
@@ -20,7 +21,7 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
     {
         //something happens when I activate this
         GameObject star = GameObject.Instantiate(NinjStar, player.ProjectilePoint.position, player.ProjectilePoint.rotation) as GameObject;
-        star.GetComponent<NinjaStarController>().Init(player.facingRight);
+        star.GetComponent<NinjaStarController>().Init(player.facingRight, player);
 
         currentStars--;
 
@@ -28,5 +29,10 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
         {
             player.RemovePowerUp();
         }
+    }
+
+    public Sprite GetIcon()
+    {
+        return icon;
     }
 }

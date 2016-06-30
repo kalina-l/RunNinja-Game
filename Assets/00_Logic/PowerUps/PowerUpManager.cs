@@ -15,7 +15,9 @@ public class PowerUpManager : MonoBehaviour
 
         for (int i = 0; i < PowerUps.Length; i++)
         {
-            powerUpInstance[i] = PowerUps[i].GetComponent<IPowerUp>();
+            GameObject pu = GameObject.Instantiate(PowerUps[i]) as GameObject;
+            pu.transform.parent = transform;
+            powerUpInstance[i] = pu.GetComponent<IPowerUp>();
         }
     }
 

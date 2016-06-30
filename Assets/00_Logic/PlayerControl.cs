@@ -38,6 +38,11 @@ public class PlayerControl : MonoBehaviour
 	public Transform ProjectilePoint;
     public Transform fxAnchor;
 
+    public Transform iconContainer;
+    public SpriteRenderer powerUpIcon;
+
+    public AnimationCurve iconAnimation;
+
     private bool shadowForm;
 
 	void Awake()
@@ -205,6 +210,10 @@ public class PlayerControl : MonoBehaviour
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
 		transform.localScale = theScale;
+
+        Vector3 iconScale = iconContainer.localScale;
+        iconScale.x *= -1;
+        iconContainer.localScale = iconScale;
 	}
 
 	private bool closeToWall(){
@@ -308,11 +317,13 @@ public class PlayerControl : MonoBehaviour
     public void AddPowerUp(IPowerUp powerUp)
     {
         currentPowerUp = powerUp;
+        StartCoroutine(AnimatePowerUpIcon(true));
         powerUp.Setup(this);
     }
 
     public void RemovePowerUp()
     {
+        StartCoroutine(AnimatePowerUpIcon(false));
         currentPowerUp = null;
     }
 
@@ -354,5 +365,28 @@ public class PlayerControl : MonoBehaviour
 
         yield return new WaitForSeconds(1);
         GameObject.Destroy(fxObject);
+    }
+
+    private IEnumerator AnimatePowerUpIcon(bool show)
+    {
+        float timer = 0;
+
+        while (timer < 1)
+        {
+            timer += Time.deltaTime * 4;
+
+            if (show)
+            {
+                powerUpIcon.sprite = currentPowerUp.GetIcon();
+
+                powerUpIcon.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * 0.7f, iconAnimation.Evaluate(timer));
+            }
+            else
+            {
+                powerUpIcon.transform.localScale = Vector3.Lerp(Vector3.one * 0.7f, Vector3.zero, iconAnimation.Evaluate(timer));
+            }
+
+            yield return 0;
+        }
     }
 }

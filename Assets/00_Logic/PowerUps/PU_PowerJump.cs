@@ -6,6 +6,7 @@ public class PU_PowerJump : MonoBehaviour, IPowerUp {
     public Vector2 BoostForce;
 
     private PlayerControl player;
+    public Sprite icon;
 
     public void Setup(PlayerControl player)
     {
@@ -21,5 +22,10 @@ public class PU_PowerJump : MonoBehaviour, IPowerUp {
         //something happens when I activate this
         player.BoostPlayer(BoostForce);
         player.RemovePowerUp();
+    }
+
+    public Sprite GetIcon()
+    {
+        return icon;
     }
 }
