@@ -135,7 +135,7 @@ public class UiManager : MonoBehaviour {
         Destroy(eventsystem);
 
         //load additive the new scene
-        SceneManager.LoadScene(3, LoadSceneMode.Additive);
+        SceneManager.LoadScene("TestMultiplePlayer", LoadSceneMode.Additive);
     }
 
     private int numOfActivePlayer()

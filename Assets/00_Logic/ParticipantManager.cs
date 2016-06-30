@@ -8,6 +8,8 @@ public class ParticipantManager : MonoBehaviour {
     public ArrayList participants;
     public GameObject partipantPrefab;
     private bool activeGame = false;
+    private bool preFreeze = true;
+    private float preFrezzeTime = 3;
 
     private Camera cam;
     private FollowCamera followCam;
@@ -81,7 +83,7 @@ public class ParticipantManager : MonoBehaviour {
     private void endOfGame()
     {
         activeGame = false;
-        SceneManager.LoadScene(4, LoadSceneMode.Additive);
+        SceneManager.LoadScene("WinnerScene", LoadSceneMode.Additive);
     }
 
     private void removeOuterParticipants()
