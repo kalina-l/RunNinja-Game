@@ -37,11 +37,11 @@ public class Obstacle : MonoBehaviour
         destroyed = true;
     }
 
-    void OnCollisionEnter2D(Collision2D coll)
+    void OnTriggerEnter2D (Collider2D other)
     {
-        if (coll.gameObject.tag == "Player")
+        if (other.tag == "Player")
         {
-            coll.gameObject.GetComponent<PlayerControl>().StunPlayer();
+            other.gameObject.GetComponent<PlayerControl>().StunPlayer();
 
             if (IsLight)
             {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PU_SpeedBoost : MonoBehaviour, IPowerUp {
+public class PU_PowerJump : MonoBehaviour, IPowerUp {
 
     public Vector2 BoostForce;
 
@@ -9,6 +9,7 @@ public class PU_SpeedBoost : MonoBehaviour, IPowerUp {
 
     public void Setup(PlayerControl player)
     {
+        Debug.Log("Picked up POWERJUMP!");
         //something happens when I pick this up
         this.player = player;
     }
