@@ -36,6 +36,14 @@ public class PlayerControl : MonoBehaviour
     private IPowerUp currentPowerUp; 
 
 	public Transform ProjectilePoint;
+    public Transform fxAnchor;
+
+    public Transform iconContainer;
+    public SpriteRenderer powerUpIcon;
+
+    public AnimationCurve iconAnimation;
+
+    private bool shadowForm;
 
 	void Awake()
 	{
@@ -67,7 +75,7 @@ public class PlayerControl : MonoBehaviour
 			jump = true;
 		}
 		controlAccess = Controls.GetControlValue(Controls.Input.Roll, this.control_id);
-		if (Input.GetButtonDown (controlAccess) && !stunned && falling) {
+		if (Input.GetButtonDown (controlAccess) && (!stunned || shadowForm) && falling) {
 			anim.SetTrigger ("Roll");
 		}
 		controlAccess = Controls.GetControlValue(Controls.Input.Attack, this.control_id);
@@ -152,7 +160,7 @@ public class PlayerControl : MonoBehaviour
 				doubleJumpUsed = true;
 			}
 			if ((!playerCloseToWall || grounded) && !blockDoubleJump) {
-				if (!stunned)
+				if (!stunned || shadowForm)
 					AddForce (new Vector2 (0f, jumpForce), ForceMode.Impulse);
 			}
 			jump = false;
@@ -179,10 +187,7 @@ public class PlayerControl : MonoBehaviour
 		// stun if the player falls from a certain height
 		if (grounded) {
 			if (Mathf.Abs (transform.position.y - highestJumpXValue) > saveJumpHeight  && !rolling) {
-				rigidbody.velocity = Vector2.zero;
-				Debug.Log ("stun");
-				StartCoroutine (stunPlayer (15)); // stun for number of frames
-				anim.SetTrigger ("Landing");
+                StunPlayer();
 			}
 			highestJumpXValue = transform.position.y;
 		}
@@ -205,6 +210,10 @@ public class PlayerControl : MonoBehaviour
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
 		transform.localScale = theScale;
+
+        Vector3 iconScale = iconContainer.localScale;
+        iconScale.x *= -1;
+        iconContainer.localScale = iconScale;
 	}
 
 	private bool closeToWall(){
@@ -247,7 +256,6 @@ public class PlayerControl : MonoBehaviour
 
 	private IEnumerator applyJumpWallForce(int frameCount, int dir, float jumpForce){
 		float verticalForce = jumpForce;
-		//StartCoroutine (stunPlayer (frameCount));
 		while (frameCount > 0)
 		{
 			frameCount--;
@@ -260,6 +268,8 @@ public class PlayerControl : MonoBehaviour
 	}
 
 	private IEnumerator stunPlayer(int frameCount) {
+        rigidbody.velocity = Vector2.zero;
+        anim.SetTrigger("Landing");
 		stunned = true;
 		while (frameCount > 0)
 		{
@@ -301,21 +311,82 @@ public class PlayerControl : MonoBehaviour
         else
             force.x = Mathf.Abs(force.x) * -1;
 
-        AddForce(force, ForceMode.Force);
+        AddForce(force, ForceMode.Impulse);
     }
 
     public void AddPowerUp(IPowerUp powerUp)
     {
         currentPowerUp = powerUp;
+        StartCoroutine(AnimatePowerUpIcon(true));
         powerUp.Setup(this);
     }
 
     public void RemovePowerUp()
     {
+        StartCoroutine(AnimatePowerUpIcon(false));
         currentPowerUp = null;
     }
 
 	public void StunPlayer(){
-		StartCoroutine (stunPlayer(15));
+        if (!shadowForm)
+        {
+            Debug.Log("stun");
+            StartCoroutine(stunPlayer(15));
+        }
 	}
+
+    public void ActivateShadowForm(GameObject fx, float duration)
+    {
+        StartCoroutine(ShadowFormRoutine(fx, duration));
+    }
+
+    private IEnumerator ShadowFormRoutine(GameObject fx, float duration)
+    {
+        float timer = 0;
+
+        while (shadowForm)
+        {
+            timer += Time.deltaTime;
+            yield return 0;
+        }
+
+        GameObject fxObject = GameObject.Instantiate(fx) as GameObject;
+        fxObject.transform.SetParent(fxAnchor);
+        fxObject.transform.localScale = Vector3.one;
+        fxObject.transform.localPosition = Vector3.zero;
+
+        shadowForm = true;
+
+        yield return new WaitForSeconds(duration - timer);
+
+        fxObject.GetComponent<ParticleSystem>().Stop();
+
+        shadowForm = false;
+
+        yield return new WaitForSeconds(1);
+        GameObject.Destroy(fxObject);
+    }
+
+    private IEnumerator AnimatePowerUpIcon(bool show)
+    {
+        float timer = 0;
+
+        while (timer < 1)
+        {
+            timer += Time.deltaTime * 4;
+
+            if (show)
+            {
+                powerUpIcon.sprite = currentPowerUp.GetIcon();
+
+                powerUpIcon.transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * 0.7f, iconAnimation.Evaluate(timer));
+            }
+            else
+            {
+                powerUpIcon.transform.localScale = Vector3.Lerp(Vector3.one * 0.7f, Vector3.zero, iconAnimation.Evaluate(timer));
+            }
+
+            yield return 0;
+        }
+    }
 }

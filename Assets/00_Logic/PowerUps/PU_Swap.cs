@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PU_NinjaStar : MonoBehaviour, IPowerUp {
+public class PU_Swap : MonoBehaviour, IPowerUp
+{
 
     public GameObject NinjStar;
     private PlayerControl player;

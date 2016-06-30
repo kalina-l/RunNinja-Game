@@ -3,7 +3,8 @@ using System.Collections;
 using System;
 using UnityEngine.SceneManagement;
 
-public class ParticipantManager : MonoBehaviour {
+public class ParticipantManager : MonoBehaviour
+{
 
     public ArrayList participants;
     public GameObject partipantPrefab;
@@ -23,10 +24,11 @@ public class ParticipantManager : MonoBehaviour {
     {
         instance = this;
     }
-    
+
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         participants = new ArrayList();
         uiManager = GameObject.FindWithTag("myUIController").GetComponent<UiManager>();
         bool[] playerIDs = uiManager.playerToPlay;
@@ -36,16 +38,18 @@ public class ParticipantManager : MonoBehaviour {
             if (playerIDs[i])
             {
                 //instantiate that one
-                AddParticipant(i+1);
+                AddParticipant(i + 1);
 
             }
-        }       
-        cam = GameObject.FindWithTag("myCamera").GetComponent <Camera> ();
+        }
+        cam = GameObject.FindWithTag("myCamera").GetComponent<Camera>();
         followCam = cam.GetComponent("FollowCamera") as FollowCamera;
+        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
 
         if (activeGame)
         {
@@ -76,7 +80,7 @@ public class ParticipantManager : MonoBehaviour {
                     followCam.target = leader.transform.Find("Character").gameObject;
                 }
 
-            } 
+            }
         }
     }
 
@@ -86,7 +90,7 @@ public class ParticipantManager : MonoBehaviour {
         SceneManager.LoadScene("WinnerScene", LoadSceneMode.Additive);
     }
 
-    private void removeOuterParticipants()
+    private float calcShadowBorder()
     {
         var pos = cam.transform.position;
         //Debug.Log("Pos Cam " + pos);
@@ -94,16 +98,50 @@ public class ParticipantManager : MonoBehaviour {
         var aspectRatio = cam.aspect;
         //Debug.Log("aspectRatio " + aspectRatio);
 
-        var leftBounds = cam.transform.position.x - cam.orthographicSize*aspectRatio;
-        //Debug.Log("leftBounds " + leftBounds);
+        var leftBounds = cam.transform.position.x - cam.orthographicSize * aspectRatio;
+        var width = cam.orthographicSize * aspectRatio * 2;
+        //Debug.Log("cam.orthographicSize*aspectRatio " + cam.orthographicSize * aspectRatio);
+
+        GameObject shadow = cam.transform.FindChild("Shadow").gameObject;
+        var xtranslateOfShadow = shadow.transform.localPosition.x;
+        //Debug.Log("xtranslateOfShadow " + xtranslateOfShadow);
+
+        ParticleSystem particelSystem = shadow.GetComponent<ParticleSystem>();
+        var shadowSize = particelSystem.shape.box.x;
+        //Debug.Log("shadowSize " + shadowSize);
+
+        float y2 = leftBounds + width;
+        //Debug.Log("y2 " + y2);
+
+        float y1 = leftBounds;
+        //Debug.Log("y1 " + y1);
+
+        float x1 = -25;
+        //Debug.Log("x1 " + x1);
+
+        float x2 = 0;
+        //Debug.Log("x2 " + x2);
+
+        float x = shadow.transform.localPosition.x;
+        //Debug.Log("x " + x);
+
+        float y = ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
+        //Debug.Log("y " + y);
+        return y;
+    }
+
+    private void removeOuterParticipants()
+    {
+        var leftbounds = calcShadowBorder();
+        //Debug.Log("leftbounds " + leftbounds);
 
         foreach (Participant p in participants)
         {
             if (p.isAlive)
             {
                 var playerX = p.transform.Find("Character").position.x;
-                //Debug.Log("playerX "+ playerX);
-                if (playerX < leftBounds)
+                //Debug.Log("playerX " + playerX);
+                if (playerX < leftbounds)
                 {
                     //KILL
                     RemoveParticipant(p);

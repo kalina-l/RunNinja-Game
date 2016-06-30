@@ -11,8 +11,12 @@ public class NinjaStarController : MonoBehaviour {
     private bool destroyed;
     private float timer;
 
+    public bool swap;
+
+    private PlayerControl player;
+
 	// Use this for initialization
-	public void Init (bool facingRight) {
+	public void Init (bool facingRight, PlayerControl player) {
         rigidBody = GetComponent<Rigidbody2D>();
 
         Vector2 force = Vector2.right * speed;
@@ -22,6 +26,8 @@ public class NinjaStarController : MonoBehaviour {
 
         rigidBody.AddForce(force, ForceMode2D.Impulse);
         animator = GetComponent<Animator>();
+
+        this.player = player;
     }
 
     // Update is called once per frame
@@ -61,13 +67,27 @@ public class NinjaStarController : MonoBehaviour {
 
     void OnTriggerEnter2D (Collider2D other) {
 
+
         if (other.tag == "Player")
         {
-             other.GetComponent<PlayerControl>().StunPlayer();
+            if (swap)
+            {
+                Vector3 playerPosition = player.transform.position;
+                player.transform.position = other.transform.position;
+                other.transform.position = playerPosition;
+            }
+            else
+            {
+                other.GetComponent<PlayerControl>().StunPlayer();
+            }
         }
 
         if (other.tag == "Obstacle")
         {
+            Vector3 playerPosition = player.transform.position;
+            player.transform.position = other.transform.position;
+            other.transform.position = playerPosition;
+
             other.GetComponent<Obstacle>().Destroy();
         }
 
