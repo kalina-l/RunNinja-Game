@@ -44,6 +44,7 @@ public class ParticipantManager : MonoBehaviour
         }
         cam = GameObject.FindWithTag("myCamera").GetComponent<Camera>();
         followCam = cam.GetComponent("FollowCamera") as FollowCamera;
+        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
     }
 
     // Update is called once per frame
@@ -110,36 +111,36 @@ public class ParticipantManager : MonoBehaviour
         //Debug.Log("shadowSize " + shadowSize);
 
         float y2 = leftBounds + width;
-        Debug.Log("y2 " + y2);
+        //Debug.Log("y2 " + y2);
 
         float y1 = leftBounds;
-        Debug.Log("y1 " + y1);
+        //Debug.Log("y1 " + y1);
 
         float x1 = -25;
-        Debug.Log("x1 " + x1);
+        //Debug.Log("x1 " + x1);
 
         float x2 = 0;
-        Debug.Log("x2 " + x2);
+        //Debug.Log("x2 " + x2);
 
         float x = shadow.transform.localPosition.x;
-        Debug.Log("x " + x);
+        //Debug.Log("x " + x);
 
         float y = ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
-        Debug.Log("y " + y);
+        //Debug.Log("y " + y);
         return y;
     }
 
     private void removeOuterParticipants()
     {
         var leftbounds = calcShadowBorder();
-        Debug.Log("leftbounds " + leftbounds);
+        //Debug.Log("leftbounds " + leftbounds);
 
         foreach (Participant p in participants)
         {
             if (p.isAlive)
             {
                 var playerX = p.transform.Find("Character").position.x;
-                Debug.Log("playerX " + playerX);
+                //Debug.Log("playerX " + playerX);
                 if (playerX < leftbounds)
                 {
                     //KILL
