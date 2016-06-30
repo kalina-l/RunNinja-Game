@@ -6,6 +6,7 @@ public class PU_ShadowRun : MonoBehaviour, IPowerUp {
     public float duration = 5;
     public GameObject ShadowFX;
     public Sprite icon;
+    public int weight;
 
 
     private PlayerControl player;
@@ -28,4 +29,9 @@ public class PU_ShadowRun : MonoBehaviour, IPowerUp {
     {
         return icon;
     }
+    public int GetWeight()
+    {
+        return weight;
+    }
+
 }
