@@ -26,17 +26,37 @@ public class NinjaStarController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        //rigidBody.velocity = new Vector2(speed, rigidBody.velocity.y);
 
         if (destroyed)
         {
             timer += Time.deltaTime;
 
-            if (timer > 0.5f)
+            if (timer > 0.25f)
             {
                 GameObject.Destroy(gameObject);
             }
         }
+        else
+        {
+            timer += Time.deltaTime;
+
+            if (timer > 4)
+            {
+                Destroy();
+            }
+        }
+    }
+
+    private void Destroy()
+    {
+        destroyed = true;
+        timer = 0;
+
+        animator.SetTrigger("Destroy");
+
+        rigidBody.velocity = Vector3.zero;
+
+        GetComponent<Collider2D>().enabled = false;
     }
 
     void OnTriggerEnter2D (Collider2D other) {
@@ -51,11 +71,7 @@ public class NinjaStarController : MonoBehaviour {
             other.GetComponent<Obstacle>().Destroy();
         }
 
-        destroyed = true;
-
-        animator.SetTrigger("Destroy");
-
-        GetComponent<Collider2D>().enabled = false;
+        Destroy();
     }
 }
 
