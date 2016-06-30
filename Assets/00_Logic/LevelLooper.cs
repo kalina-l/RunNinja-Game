@@ -3,7 +3,7 @@ using System.Collections;
 
 public class LevelLooper : MonoBehaviour {
 
-    public GameObject levelPrefab;
+    public GameObject levelToClone;
     public GameObject lastInsertedLevel = null;
     public float widthOfLevel;
     public float offsetOfLevel;
@@ -13,11 +13,11 @@ public class LevelLooper : MonoBehaviour {
 	void Start () {
         this.participantManager = GameObject.Find("ParticipantManager").gameObject.GetComponent<ParticipantManager>();
 
-        lastInsertedLevel = Instantiate(levelPrefab,
-                            levelPrefab.transform.position,
-                            levelPrefab.transform.rotation) as GameObject;
+        lastInsertedLevel = Instantiate(levelToClone,
+                            new Vector3(0,0,0),
+                            levelToClone.transform.rotation) as GameObject;
 
-        BoxCollider2D levelBox = levelPrefab.GetComponent<BoxCollider2D>();
+        BoxCollider2D levelBox = levelToClone.GetComponent<BoxCollider2D>();
         this.widthOfLevel = levelBox.size.x;
         this.offsetOfLevel = levelBox.offset.x;
 
@@ -38,9 +38,9 @@ public class LevelLooper : MonoBehaviour {
                 Vector3 newPos = new Vector3(lastPos.x + widthOfLevel, 0, 0);
 
                 //create a new level
-                lastInsertedLevel = Instantiate(levelPrefab,
+                lastInsertedLevel = Instantiate(levelToClone,
                                     newPos,
-                                    levelPrefab.transform.rotation) as GameObject;
+                                    levelToClone.transform.rotation) as GameObject;
             }
         }
     }
