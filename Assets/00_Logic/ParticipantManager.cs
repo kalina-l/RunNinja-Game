@@ -97,6 +97,8 @@ public class ParticipantManager : MonoBehaviour {
         var leftBounds = cam.transform.position.x - cam.orthographicSize*aspectRatio;
         //Debug.Log("leftBounds " + leftBounds);
 
+
+
         foreach (Participant p in participants)
         {
             if (p.isAlive)
