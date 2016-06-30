@@ -7,11 +7,13 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
     private PlayerControl player;
 
     public int starCount = 3;
+    private int currentStars;
 
     public void Setup(PlayerControl player)
     {
         //something happens when I pick this up
         this.player = player;
+        currentStars = starCount;
     }
 
     public void Activate()
@@ -20,9 +22,9 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
         GameObject star = GameObject.Instantiate(NinjStar, player.ProjectilePoint.position, player.ProjectilePoint.rotation) as GameObject;
         star.GetComponent<NinjaStarController>().Init(player.facingRight);
 
-        //starCount--;
+        currentStars--;
 
-        if (starCount == 0)
+        if (currentStars <= 0)
         {
             player.RemovePowerUp();
         }
