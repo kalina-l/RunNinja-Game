@@ -17,10 +17,10 @@ public class LevelLooper : MonoBehaviour {
                             new Vector3(0,0,0),
                             levelToClone.transform.rotation) as GameObject;
 
-        BoxCollider2D levelBox = levelToClone.GetComponent<BoxCollider2D>();
-        lastInsertedLevel.GetComponent<BoxCollider2D>().enabled = false;
+        BoxCollider2D levelBox = levelToClone.GetComponent<BoxCollider2D>();        
         this.widthOfLevel = levelBox.size.x;
         this.offsetOfLevel = levelBox.offset.x;
+        lastInsertedLevel.GetComponent<BoxCollider2D>().enabled = false;
         levelBox.enabled = false;
 
     }

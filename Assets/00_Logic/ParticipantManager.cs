@@ -8,6 +8,7 @@ public class ParticipantManager : MonoBehaviour
 
     public ArrayList participants;
     public GameObject partipantPrefab;
+
     private bool activeGame = false;
     private bool preFreeze = true;
     private float preFrezzeTime = 3;
@@ -77,7 +78,7 @@ public class ParticipantManager : MonoBehaviour
                 }
                 else
                 {
-                    followCam.target = leader.transform.Find("Character").gameObject;
+                    followCam.target = leader.character;
                 }
 
             }
@@ -92,55 +93,30 @@ public class ParticipantManager : MonoBehaviour
 
     private float calcShadowBorder()
     {
-        var pos = cam.transform.position;
-        //Debug.Log("Pos Cam " + pos);
-
         var aspectRatio = cam.aspect;
-        //Debug.Log("aspectRatio " + aspectRatio);
-
         var leftBounds = cam.transform.position.x - cam.orthographicSize * aspectRatio;
         var width = cam.orthographicSize * aspectRatio * 2;
-        //Debug.Log("cam.orthographicSize*aspectRatio " + cam.orthographicSize * aspectRatio);
-
-        GameObject shadow = cam.transform.FindChild("Shadow").gameObject;
-        var xtranslateOfShadow = shadow.transform.localPosition.x;
-        //Debug.Log("xtranslateOfShadow " + xtranslateOfShadow);
-
+        GameObject shadow = cam.transform.FindChild("Shadow").gameObject;        
         ParticleSystem particelSystem = shadow.GetComponent<ParticleSystem>();
         var shadowSize = particelSystem.shape.box.x;
-        //Debug.Log("shadowSize " + shadowSize);
-
         float y2 = leftBounds + width;
-        //Debug.Log("y2 " + y2);
-
         float y1 = leftBounds;
-        //Debug.Log("y1 " + y1);
-
         float x1 = -25;
-        //Debug.Log("x1 " + x1);
-
         float x2 = 0;
-        //Debug.Log("x2 " + x2);
-
         float x = shadow.transform.localPosition.x;
-        //Debug.Log("x " + x);
-
         float y = ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
-        //Debug.Log("y " + y);
         return y;
     }
 
     private void removeOuterParticipants()
     {
         var leftbounds = calcShadowBorder();
-        //Debug.Log("leftbounds " + leftbounds);
 
         foreach (Participant p in participants)
         {
             if (p.isAlive)
             {
-                var playerX = p.transform.Find("Character").position.x;
-                //Debug.Log("playerX " + playerX);
+                var playerX = p.character.transform.position.x;
                 if (playerX < leftbounds)
                 {
                     //KILL
@@ -161,8 +137,7 @@ public class ParticipantManager : MonoBehaviour
                 {
                     leader = p;
                 }
-                //Debug.Log(p.transform.Find("Character").position.x);
-                else if (p.transform.Find("Character").position.x > leader.transform.Find("Character").position.x)
+                else if (p.character.transform.position.x > leader.character.transform.position.x)
                 {
                     leader = p;
                 }
@@ -196,7 +171,7 @@ public class ParticipantManager : MonoBehaviour
         //TODO Remove from scene
 
         p.isAlive = false;
-        GameObject character = p.transform.Find("Character").gameObject;
+        GameObject character = p.character;
         Destroy(character);
     }
 
