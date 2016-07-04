@@ -244,11 +244,11 @@ public class PlayerControl : MonoBehaviour
 		StartCoroutine (resetWallJump ());
 		//flipPlayersDirection (); // automatic jump with a button
 		if (facingRight){
-			AddForce (new Vector2 (-3000, 7000), ForceMode.Acceleration);
+			AddForce (new Vector2 (-4000, 6000), ForceMode.Acceleration);
 			//StartCoroutine (applyJumpWallForce(19, 1, 12f)); // automatic jump with a button
 		}
 		else {
-			AddForce (new Vector2 (3000, 7000), ForceMode.Acceleration);
+			AddForce (new Vector2 (4000, 6000), ForceMode.Acceleration);
 			//StartCoroutine (applyJumpWallForce(19, -1, 12f)); // automatic jump with a button
 		}
 		// blockJumpMovement = true;
