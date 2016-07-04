@@ -63,8 +63,8 @@ public class PlayerControl : MonoBehaviour
 		Debug.DrawRay(wallJumpCheck.position, collidersHalfWidth + new Vector3 (2, 0, 0), Color.red, 1.0f, true);
 		Debug.DrawRay(wallJumpCheck.position, -collidersHalfWidth - new Vector3 (2, 0, 0), Color.red, 1.0f, true);
 		//grounded check
-		Debug.DrawRay(transform.position - collidersHalfWidth, groundCheck.position - transform.position, Color.green, 5.0f, true);
-		Debug.DrawRay(transform.position + collidersHalfWidth, groundCheck.position - transform.position, Color.green, 5.0f, true);
+		Debug.DrawRay(transform.position - collidersHalfWidth, groundCheck.position - transform.position, Color.green, 0f, true);
+		Debug.DrawRay(transform.position + collidersHalfWidth, groundCheck.position - transform.position, Color.green, 0f, true);
 
 		checkIfGrounded ();
 		checkFallsHeight ();
@@ -244,11 +244,11 @@ public class PlayerControl : MonoBehaviour
 		StartCoroutine (resetWallJump ());
 		//flipPlayersDirection (); // automatic jump with a button
 		if (facingRight){
-			AddForce (new Vector2 (-2000, 5000), ForceMode.Acceleration);
+			AddForce (new Vector2 (-3000, 7000), ForceMode.Acceleration);
 			//StartCoroutine (applyJumpWallForce(19, 1, 12f)); // automatic jump with a button
 		}
 		else {
-			AddForce (new Vector2 (2000, 5000), ForceMode.Acceleration);
+			AddForce (new Vector2 (3000, 7000), ForceMode.Acceleration);
 			//StartCoroutine (applyJumpWallForce(19, -1, 12f)); // automatic jump with a button
 		}
 		// blockJumpMovement = true;

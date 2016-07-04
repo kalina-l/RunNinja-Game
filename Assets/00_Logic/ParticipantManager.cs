@@ -173,6 +173,7 @@ public class ParticipantManager : MonoBehaviour
         p.isAlive = false;
         GameObject character = p.character;
         Destroy(character);
+		uiManager.playerDied (p.id);
     }
 
     int getNumOIfActivePlayers()
