@@ -389,4 +389,8 @@ public class PlayerControl : MonoBehaviour
             yield return 0;
         }
     }
+
+	public bool getRolling(){
+		return rolling;
+	}
 }
