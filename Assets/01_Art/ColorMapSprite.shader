@@ -1,4 +1,4 @@
-﻿Shader "Sprites/ColorMapSprite"
+﻿Shader "Ninja/ColorMapSprite"
 {
 	Properties
 	{

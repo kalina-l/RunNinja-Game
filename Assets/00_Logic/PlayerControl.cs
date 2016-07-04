@@ -187,7 +187,7 @@ public class PlayerControl : MonoBehaviour
 		// stun if the player falls from a certain height
 		if (grounded) {
 			if (Mathf.Abs (transform.position.y - highestJumpXValue) > saveJumpHeight  && !rolling) {
-                StunPlayer();
+                StunPlayer(0.35f);
 			}
 			highestJumpXValue = transform.position.y;
 		}
@@ -279,6 +279,24 @@ public class PlayerControl : MonoBehaviour
 		stunned = false;
 	}
 
+    private IEnumerator StunPlayerRoutine(float duration)
+    {
+        rigidbody.velocity = Vector2.zero;
+        anim.SetBool("Stunned", true);
+        stunned = true;
+
+        float timer = 0;
+        while (timer < 1)
+        {
+            timer += Time.deltaTime * 1/duration;
+            yield return 0;
+        }
+
+        anim.SetBool("Stunned", false);
+
+        stunned = false;
+    }
+
 	private IEnumerator addAttackPenalty() {
 		canAttack = false;
 		yield return new WaitForSeconds(0.5f);
@@ -327,11 +345,11 @@ public class PlayerControl : MonoBehaviour
         currentPowerUp = null;
     }
 
-	public void StunPlayer(){
-        if (!shadowForm)
+	public void StunPlayer(float duration){
+        if (!shadowForm && !stunned)
         {
             Debug.Log("stun");
-            StartCoroutine(stunPlayer(15));
+            StartCoroutine(StunPlayerRoutine(duration));
         }
 	}
 
