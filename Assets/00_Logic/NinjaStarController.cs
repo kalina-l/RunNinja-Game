@@ -84,11 +84,16 @@ public class NinjaStarController : MonoBehaviour {
 
         if (other.tag == "Obstacle")
         {
-            Vector3 playerPosition = player.transform.position;
-            player.transform.position = other.transform.position;
-            other.transform.position = playerPosition;
-
-            other.GetComponent<Obstacle>().Destroy();
+            if (swap)
+            {
+                Vector3 playerPosition = player.transform.position;
+                player.transform.position = other.transform.position;
+                other.transform.position = playerPosition;
+            }
+            else
+            {
+                other.GetComponent<Obstacle>().Destroy();
+            }
         }
 
         Destroy();

@@ -6,6 +6,8 @@
 		_Color ("Tint", Color) = (1,1,1,1)
 		[MaterialToggle] PixelSnap ("Pixel snap", Float) = 0
 		_PlayerColor ("Player Color", Color) = (1,1,1,1)
+		_PlayerColor2 ("Player Color 2", Color) = (1,1,1,1)
+		_PlayerColor3 ("Player Color 3", Color) = (1,1,1,1)
 	}
 
 	SubShader
@@ -49,13 +51,15 @@
 			
 			fixed4 _Color;
 			fixed4 _PlayerColor;
+			fixed4 _PlayerColor2;
+			fixed4 _PlayerColor3;
 
 			v2f vert(appdata_t IN)
 			{
 				v2f OUT;
 				OUT.vertex = mul(UNITY_MATRIX_MVP, IN.vertex);
 				OUT.texcoord = IN.texcoord;
-				OUT.color = IN.color * _Color;
+				OUT.color = IN.color;
 				#ifdef PIXELSNAP_ON
 				OUT.vertex = UnityPixelSnap (OUT.vertex);
 				#endif
@@ -85,9 +89,16 @@
 				c.rgb *= c.a;
 
 				float rValue = step(0.1f, c.r - ((c.g + c.b)*0.5f));
-				fixed4 bwCol = fixed4(c.r, c.r, c.r, c.a);
+				float gValue = step(0.1f, c.g - ((c.r + c.b)*0.5f));
+				float bValue = step(0.1f, c.b - ((c.g + c.r)*0.5f));
 
-				return lerp(c, bwCol * _PlayerColor, rValue);
+
+				fixed4 rCol = fixed4(c.r, c.r, c.r, c.a) * _PlayerColor;
+				fixed4 gCol = fixed4(c.g, c.g, c.g, c.a) * _PlayerColor2;
+				fixed4 bCol = fixed4(c.b, c.b, c.b, c.a) * _PlayerColor3;
+
+
+				return lerp(lerp(lerp(c * _Color, rCol, rValue), gCol, gValue), bCol, bValue);
 			}
 		ENDCG
 		}
