@@ -281,7 +281,7 @@ public class PlayerControl : MonoBehaviour
 
 	private IEnumerator addAttackPenalty() {
 		canAttack = false;
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(0.5f);
 		canAttack = true;
 	}
 
