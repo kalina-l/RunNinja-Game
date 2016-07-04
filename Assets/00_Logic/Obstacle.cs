@@ -42,7 +42,7 @@ public class Obstacle : MonoBehaviour
         if (other.tag == "Player")
         {
 			if(!other.gameObject.GetComponent<PlayerControl>().getRolling())
-            	other.gameObject.GetComponent<PlayerControl>().StunPlayer();
+            other.gameObject.GetComponent<PlayerControl>().StunPlayer(0.35f);
 
             if (IsLight)
             {
