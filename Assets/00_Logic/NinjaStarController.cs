@@ -46,7 +46,7 @@ public class NinjaStarController : MonoBehaviour {
         {
             timer += Time.deltaTime;
 
-            if (timer > 4)
+            if (timer > 2)
             {
                 Destroy();
             }
