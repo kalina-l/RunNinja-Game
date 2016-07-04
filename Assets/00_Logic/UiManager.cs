@@ -9,6 +9,8 @@ public class UiManager : MonoBehaviour {
     public int numOfPlayer = 0;
     public bool[] playerToPlay;  //the ids of the player
 
+	public GameObject menuPanel;
+
     public GameObject player1Label;
     public GameObject player2Label;
     public GameObject player3Label;
@@ -23,9 +25,11 @@ public class UiManager : MonoBehaviour {
     private bool inGame;
     private double timeLeftUntilStart = 3;
 
+	public GameObject gameplayPanel;
+
+	public Text playerDiedText;
+
     //TO Delete after Start of Game
-    public GameObject canvas;
-    public GameObject eventsystem;
     public GameObject menueCamera;
 
     // Use this for initialization
@@ -131,8 +135,8 @@ public class UiManager : MonoBehaviour {
         //remove elements from current Scene exept this one - make sure nothings runs in this script.
         inGame = true;
         Destroy(menueCamera);
-        Destroy(canvas);
-        Destroy(eventsystem);
+		menuPanel.SetActive (false);
+		gameplayPanel.SetActive (true);
 
         //load additive the new scene
         SceneManager.LoadScene("TestMultiplePlayer", LoadSceneMode.Additive);
@@ -150,4 +154,14 @@ public class UiManager : MonoBehaviour {
         }
         return num;
     }
+
+	public void playerDied(int playerNumber){
+		playerDiedText.text = "Player " + playerNumber + " defeated!";
+		StartCoroutine (deactivePlayerDiedText());
+	}
+
+	private IEnumerator deactivePlayerDiedText(){
+		yield return new WaitForSeconds(3);
+		playerDiedText.text = "";
+	}
 }
