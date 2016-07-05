@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PowerUpManager : MonoBehaviour 
 {
@@ -24,6 +25,25 @@ public class PowerUpManager : MonoBehaviour
 
     public void AddPowerUp(PlayerControl player)
     {
-        player.AddPowerUp(powerUpInstance[(int)(Random.value * PowerUps.Length)]);
+		Participant p = player.Participant;
+
+		int racePosition = 0;
+
+		if(ParticipantManager.instance != null)
+			racePosition = ParticipantManager.instance.getPlayerRacePosition (p.id);
+
+		List<IPowerUp> weightedList = new List<IPowerUp> ();
+
+		for (int i = 0; i < powerUpInstance.Length; i++) {
+
+			int weight = powerUpInstance [i].GetWeight (racePosition);
+
+			for(int j=0; j<weight; j++)
+			{
+				weightedList.Add (powerUpInstance [i]);
+			}
+		}
+
+		player.AddPowerUp(weightedList[(int)(Random.value * weightedList.Count)]);
     }
 }

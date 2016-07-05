@@ -45,6 +45,8 @@ public class PlayerControl : MonoBehaviour
 
     private bool shadowForm;
 
+	public Participant Participant{ get; private set; }
+
 	void Awake()
 	{
 		// Setting up references.
@@ -54,6 +56,8 @@ public class PlayerControl : MonoBehaviour
 		Vector2 collidersSize = GetComponent<BoxCollider2D> ().size;
 		rigidbody = GetComponent<Rigidbody2D> ();
 		collidersHalfWidth = new Vector3 (collidersSize.x / 2, 0, 0);
+
+		Participant = transform.parent.GetComponent<Participant> ();
 	}
 
 

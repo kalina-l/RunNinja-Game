@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class UiManager : MonoBehaviour {
 
+	public static UiManager Instance;
+
     public int numOfPlayer = 0;
     public bool[] playerToPlay;  //the ids of the player
 
@@ -31,6 +33,10 @@ public class UiManager : MonoBehaviour {
 
     //TO Delete after Start of Game
     public GameObject menueCamera;
+
+	void Awake() {
+		Instance = this;
+	}
 
     // Use this for initialization
     void Start () {
