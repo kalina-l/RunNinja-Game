@@ -101,7 +101,7 @@ public class ParticipantManager : MonoBehaviour
         var shadowSize = particelSystem.shape.box.x;
         float y2 = leftBounds + width;
         float y1 = leftBounds;
-        float x1 = -25;
+        float x1 = -28f;
         float x2 = 0;
         float x = shadow.transform.localPosition.x;
         float y = ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
