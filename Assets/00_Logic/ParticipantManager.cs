@@ -30,6 +30,7 @@ public class ParticipantManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
         participants = new ArrayList();
         uiManager = GameObject.FindWithTag("myUIController").GetComponent<UiManager>();
         bool[] playerIDs = uiManager.playerToPlay;
@@ -45,7 +46,7 @@ public class ParticipantManager : MonoBehaviour
         }
         cam = GameObject.FindWithTag("myCamera").GetComponent<Camera>();
         followCam = cam.GetComponent("FollowCamera") as FollowCamera;
-        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
+
     }
 
     // Update is called once per frame
@@ -153,9 +154,12 @@ public class ParticipantManager : MonoBehaviour
 
     void AddParticipant(int id)
     {
+        //GameObject levelSpawnPoint = transform.Find("LevelSpawnPoint").gameObject;
+        //Vector3 spawnPoint = levelSpawnPoint.transform.position;
+        Vector3 spawnPoint = new Vector3(0, 0, 0);
         GameObject clone;
         clone = Instantiate(partipantPrefab,
-                            partipantPrefab.transform.position,
+                            spawnPoint,
                             partipantPrefab.transform.rotation) as GameObject;
 
 
