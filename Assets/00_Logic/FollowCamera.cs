@@ -21,6 +21,8 @@ public class FollowCamera : MonoBehaviour
     {
         if (target)
         {
+            float oldY = transform.position.y;
+
             Vector3 posNoZ = transform.position;
             posNoZ.z = target.transform.position.z;
 
@@ -30,7 +32,11 @@ public class FollowCamera : MonoBehaviour
 
             targetPos = transform.position + (targetDirection.normalized * interpVelocity * Time.deltaTime);
 
-            transform.position = Vector3.Lerp(transform.position, targetPos + offset, 0.25f);
+            Vector3 newPosVector = Vector3.Lerp(transform.position, targetPos + offset, 0.25f);
+
+            Vector3 finalPosVektor = new Vector3(newPosVector.x, oldY, newPosVector.z);
+
+            transform.position = finalPosVektor;
 
         }
     }
