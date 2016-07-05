@@ -156,7 +156,7 @@ public class ParticipantManager : MonoBehaviour
     {
         //GameObject levelSpawnPoint = transform.Find("LevelSpawnPoint").gameObject;
         //Vector3 spawnPoint = levelSpawnPoint.transform.position;
-        Vector3 spawnPoint = new Vector3(0, 0, 0);
+        Vector3 spawnPoint = new Vector3(id, 0, 0);
         GameObject clone;
         clone = Instantiate(partipantPrefab,
                             spawnPoint,
