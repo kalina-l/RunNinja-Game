@@ -29,7 +29,6 @@ public class ParticipantManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
         participants = new ArrayList();
 		bool[] playerIDs = UiManager.Instance.playerToPlay;
         activeGame = true;
