@@ -45,6 +45,8 @@ public class PlayerControl : MonoBehaviour
 
     private bool shadowForm;
 
+	public Participant Participant{ get; private set; }
+
 	void Awake()
 	{
 		// Setting up references.
@@ -54,6 +56,8 @@ public class PlayerControl : MonoBehaviour
 		Vector2 collidersSize = GetComponent<BoxCollider2D> ().size;
 		rigidbody = GetComponent<Rigidbody2D> ();
 		collidersHalfWidth = new Vector3 (collidersSize.x / 2, 0, 0);
+
+		Participant = transform.parent.GetComponent<Participant> ();
 	}
 
 
@@ -63,8 +67,8 @@ public class PlayerControl : MonoBehaviour
 		Debug.DrawRay(wallJumpCheck.position, collidersHalfWidth + new Vector3 (2, 0, 0), Color.red, 1.0f, true);
 		Debug.DrawRay(wallJumpCheck.position, -collidersHalfWidth - new Vector3 (2, 0, 0), Color.red, 1.0f, true);
 		//grounded check
-		Debug.DrawRay(transform.position - collidersHalfWidth, groundCheck.position - transform.position, Color.green, 5.0f, true);
-		Debug.DrawRay(transform.position + collidersHalfWidth, groundCheck.position - transform.position, Color.green, 5.0f, true);
+		Debug.DrawRay(transform.position - collidersHalfWidth, groundCheck.position - transform.position, Color.green, 0f, true);
+		Debug.DrawRay(transform.position + collidersHalfWidth, groundCheck.position - transform.position, Color.green, 0f, true);
 
 		checkIfGrounded ();
 		checkFallsHeight ();
@@ -187,7 +191,7 @@ public class PlayerControl : MonoBehaviour
 		// stun if the player falls from a certain height
 		if (grounded) {
 			if (Mathf.Abs (transform.position.y - highestJumpXValue) > saveJumpHeight  && !rolling) {
-                StunPlayer();
+                StunPlayer(0.35f);
 			}
 			highestJumpXValue = transform.position.y;
 		}
@@ -244,11 +248,11 @@ public class PlayerControl : MonoBehaviour
 		StartCoroutine (resetWallJump ());
 		//flipPlayersDirection (); // automatic jump with a button
 		if (facingRight){
-			AddForce (new Vector2 (-2000, 5000), ForceMode.Acceleration);
+			AddForce (new Vector2 (-4000, 6000), ForceMode.Acceleration);
 			//StartCoroutine (applyJumpWallForce(19, 1, 12f)); // automatic jump with a button
 		}
 		else {
-			AddForce (new Vector2 (2000, 5000), ForceMode.Acceleration);
+			AddForce (new Vector2 (4000, 6000), ForceMode.Acceleration);
 			//StartCoroutine (applyJumpWallForce(19, -1, 12f)); // automatic jump with a button
 		}
 		// blockJumpMovement = true;
@@ -279,9 +283,27 @@ public class PlayerControl : MonoBehaviour
 		stunned = false;
 	}
 
+    private IEnumerator StunPlayerRoutine(float duration)
+    {
+        rigidbody.velocity = Vector2.zero;
+        anim.SetBool("Stunned", true);
+        stunned = true;
+
+        float timer = 0;
+        while (timer < 1)
+        {
+            timer += Time.deltaTime * 1/duration;
+            yield return 0;
+        }
+
+        anim.SetBool("Stunned", false);
+
+        stunned = false;
+    }
+
 	private IEnumerator addAttackPenalty() {
 		canAttack = false;
-		yield return new WaitForSeconds(2);
+		yield return new WaitForSeconds(0.5f);
 		canAttack = true;
 	}
 
@@ -327,11 +349,11 @@ public class PlayerControl : MonoBehaviour
         currentPowerUp = null;
     }
 
-	public void StunPlayer(){
-        if (!shadowForm)
+	public void StunPlayer(float duration){
+        if (!shadowForm && !stunned)
         {
             Debug.Log("stun");
-            StartCoroutine(stunPlayer(15));
+            StartCoroutine(StunPlayerRoutine(duration));
         }
 	}
 
@@ -389,4 +411,8 @@ public class PlayerControl : MonoBehaviour
             yield return 0;
         }
     }
+
+	public bool getRolling(){
+		return rolling;
+	}
 }

@@ -14,7 +14,7 @@ public class SwordCollider : MonoBehaviour {
         {
             if (other.transform != transform.parent)
             {
-                other.GetComponent<PlayerControl>().StunPlayer();
+                other.GetComponent<PlayerControl>().StunPlayer(0.7f);
             }
         }
     }

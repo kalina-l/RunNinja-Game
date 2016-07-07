@@ -9,7 +9,7 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
     public int starCount = 3;
     private int currentStars;
     public Sprite icon;
-    public int weight;
+    public int[] weight;
 
     public void Setup(PlayerControl player)
     {
@@ -37,8 +37,8 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
         return icon;
     }
 
-    public int GetWeight()
+	public int GetWeight(int place)
     {
-        return weight;
+		return weight[place];
     }
 }

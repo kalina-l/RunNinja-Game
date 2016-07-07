@@ -15,7 +15,6 @@ public class ParticipantManager : MonoBehaviour
 
     private Camera cam;
     private FollowCamera followCam;
-    private UiManager uiManager; // From Scene before
 
     public static ParticipantManager instance { get; private set; }
 
@@ -30,9 +29,9 @@ public class ParticipantManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
         participants = new ArrayList();
-        uiManager = GameObject.FindWithTag("myUIController").GetComponent<UiManager>();
-        bool[] playerIDs = uiManager.playerToPlay;
+		bool[] playerIDs = UiManager.Instance.playerToPlay;
         activeGame = true;
         for (int i = 0; i < playerIDs.Length; i++)
         {
@@ -45,7 +44,7 @@ public class ParticipantManager : MonoBehaviour
         }
         cam = GameObject.FindWithTag("myCamera").GetComponent<Camera>();
         followCam = cam.GetComponent("FollowCamera") as FollowCamera;
-        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
+
     }
 
     // Update is called once per frame
@@ -54,7 +53,7 @@ public class ParticipantManager : MonoBehaviour
 
         if (activeGame)
         {
-            int numOfActivePlayers = this.getNumOIfActivePlayers();
+            int numOfActivePlayers = this.getNumOfActivePlayers();
 
             //check If somebody won the game
             if (numOfActivePlayers == 1)
@@ -101,7 +100,7 @@ public class ParticipantManager : MonoBehaviour
         var shadowSize = particelSystem.shape.box.x;
         float y2 = leftBounds + width;
         float y1 = leftBounds;
-        float x1 = -25;
+        float x1 = -28f;
         float x2 = 0;
         float x = shadow.transform.localPosition.x;
         float y = ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
@@ -153,9 +152,12 @@ public class ParticipantManager : MonoBehaviour
 
     void AddParticipant(int id)
     {
+        //GameObject levelSpawnPoint = transform.Find("LevelSpawnPoint").gameObject;
+        //Vector3 spawnPoint = levelSpawnPoint.transform.position;
+        Vector3 spawnPoint = new Vector3(id, 0, 0);
         GameObject clone;
         clone = Instantiate(partipantPrefab,
-                            partipantPrefab.transform.position,
+                            spawnPoint,
                             partipantPrefab.transform.rotation) as GameObject;
 
 
@@ -173,9 +175,10 @@ public class ParticipantManager : MonoBehaviour
         p.isAlive = false;
         GameObject character = p.character;
         Destroy(character);
+		UiManager.Instance.playerDied (p.id);
     }
 
-    int getNumOIfActivePlayers()
+    public int getNumOfActivePlayers()
     {
         int num = 0;
         foreach (Participant p in participants)
@@ -187,4 +190,40 @@ public class ParticipantManager : MonoBehaviour
         }
         return num;
     }
+
+	public int getPlayerRacePosition(int playerID) {
+
+		Participant player = getParticipant (playerID);
+		float xPosition = player.character.transform.position.x;
+		int racePosition = getNumOfActivePlayers ();
+		int totalPlayers = getNumOfActivePlayers ();
+
+		foreach(Participant p in participants) {
+			if(p.id != playerID) {
+
+				if (!p.isAlive)
+					totalPlayers--;
+
+				if (p.character.transform.position.x < xPosition) {
+					racePosition--;
+				}
+			}
+		}
+
+		if (racePosition == 1)
+			return 0;
+		else if (racePosition == totalPlayers)
+			return 2;
+		else
+			return 1;
+	}
+
+	private Participant getParticipant(int playerID) {
+		foreach(Participant p in participants) {
+			if (p.id == playerID)
+				return p;
+		}
+
+		return null;
+	}
 }

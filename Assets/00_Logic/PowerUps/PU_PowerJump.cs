@@ -7,7 +7,7 @@ public class PU_PowerJump : MonoBehaviour, IPowerUp {
 
     private PlayerControl player;
     public Sprite icon;
-    public int weight;
+    public int[] weight;
 
     public void Setup(PlayerControl player)
     {
@@ -30,8 +30,8 @@ public class PU_PowerJump : MonoBehaviour, IPowerUp {
         return icon;
     }
 
-    public int GetWeight()
-    {
-        return weight;
-    }
+	public int GetWeight(int place)
+	{
+		return weight[place];
+	}
 }

@@ -46,7 +46,7 @@ public class NinjaStarController : MonoBehaviour {
         {
             timer += Time.deltaTime;
 
-            if (timer > 4)
+            if (timer > 0.25f)
             {
                 Destroy();
             }
@@ -78,7 +78,7 @@ public class NinjaStarController : MonoBehaviour {
             }
             else
             {
-                other.GetComponent<PlayerControl>().StunPlayer();
+                other.GetComponent<PlayerControl>().StunPlayer(0.7f);
             }
         }
 
