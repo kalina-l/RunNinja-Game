@@ -31,6 +31,12 @@ public class UiManager : MonoBehaviour {
 
 	public Text playerDiedText;
 
+	public Text stageText;
+	private int stageCounter;
+	public int stages = 2;
+
+	private bool inputDelay;
+
     //TO Delete after Start of Game
     public GameObject menueCamera;
 
@@ -87,6 +93,24 @@ public class UiManager : MonoBehaviour {
                         playerToPlay[i - 1] = false; 
                     }
                 }
+
+				for(int i = 1; i <= 4; i++)
+				{
+					string controlAccess = Controls.GetControlValue(Controls.Input.Horizontal, i);
+					if(playerToPlay[i-1] && ! inputDelay)
+					{
+						stageCounter += Mathf.Clamp((int)(Input.GetAxis (controlAccess) * 2), 0, 1);
+
+						if (stageCounter <= 0)
+							stageCounter = stages;
+						else if (stageCounter > stages)
+							stageCounter = 1;
+
+						stageText.text = "STAGE " + stageCounter;
+
+						StartCoroutine (InputDelay ());
+					}
+				}
 
 
                 int curentNumOfPlayers = numOfActivePlayer();
@@ -148,7 +172,7 @@ public class UiManager : MonoBehaviour {
         SceneManager.LoadScene("TestMultiplePlayer", LoadSceneMode.Additive);
 
 
-        SceneManager.LoadScene("LevelTester 2", LoadSceneMode.Additive);
+		SceneManager.LoadScene("LevelTester_" + stageCounter, LoadSceneMode.Additive);
     }
 
     private int numOfActivePlayer()
@@ -172,5 +196,14 @@ public class UiManager : MonoBehaviour {
 	private IEnumerator deactivePlayerDiedText(){
 		yield return new WaitForSeconds(3);
 		playerDiedText.text = "";
+	}
+
+	private IEnumerator InputDelay()
+	{
+		inputDelay = true;
+
+		yield return new WaitForSeconds (0.2f);
+
+		inputDelay = false;
 	}
 }

@@ -20,6 +20,8 @@ public class ParticipantManager : MonoBehaviour
 
     public Material[] playerMaterials;
 
+	public GameObject[] deathFX;
+
     void Awake()
     {
         instance = this;
@@ -173,6 +175,9 @@ public class ParticipantManager : MonoBehaviour
 
         p.isAlive = false;
         GameObject character = p.character;
+
+		GameObject fx = GameObject.Instantiate (deathFX [p.id - 1], character.transform.position, character.transform.rotation) as GameObject;
+
         Destroy(character);
 		UiManager.Instance.playerDied (p.id);
     }
