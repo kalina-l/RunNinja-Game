@@ -29,7 +29,6 @@ public class ParticipantManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
         participants = new ArrayList();
 		bool[] playerIDs = UiManager.Instance.playerToPlay;
         activeGame = true;
@@ -201,12 +200,18 @@ public class ParticipantManager : MonoBehaviour
 		foreach(Participant p in participants) {
 			if(p.id != playerID) {
 
-				if (!p.isAlive)
-					totalPlayers--;
-
-				if (p.character.transform.position.x < xPosition) {
-					racePosition--;
-				}
+                if (!p.isAlive)
+                {
+                    totalPlayers--;
+                    racePosition--;
+                }
+                else
+                {
+                    if (p.character.transform.position.x < xPosition)
+                    {
+                        racePosition--;
+                    }
+                }
 			}
 		}
 

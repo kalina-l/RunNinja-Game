@@ -12,10 +12,16 @@ public class Obstacle : MonoBehaviour
     private Animator animator;
     private float timer;
 
+    public float delay;
+    private float delayTimer;
+
     void Start()
     {
         collider = GetComponent<Collider2D>();
         animator = GetComponent<Animator>();
+
+        if (delay > 0)
+            collider.enabled = false;
     }
 
     void Update()
@@ -28,11 +34,23 @@ public class Obstacle : MonoBehaviour
                 GameObject.Destroy(gameObject);
             }
         }
+        else
+        {
+            if (delay > 0)
+            {
+                delay -= Time.deltaTime;
+            }
+            else
+            {
+                collider.enabled = true;
+            }
+        }
     }
 
     public void Destroy()
     {
-        animator.SetTrigger("Destroy");
+        if(animator != null)
+            animator.SetTrigger("Destroy");
         collider.enabled = false;
         destroyed = true;
     }
