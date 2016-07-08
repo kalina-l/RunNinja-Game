@@ -148,7 +148,7 @@ public class UiManager : MonoBehaviour {
         SceneManager.LoadScene("TestMultiplePlayer", LoadSceneMode.Additive);
 
 
-        SceneManager.LoadScene("LevelTester", LoadSceneMode.Additive);
+        SceneManager.LoadScene("LevelTester 2", LoadSceneMode.Additive);
     }
 
     private int numOfActivePlayer()
