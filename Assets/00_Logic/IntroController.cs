@@ -29,5 +29,15 @@ public class IntroController : MonoBehaviour {
             SceneManager.LoadScene("Menu", LoadSceneMode.Single);
         }
 
+        for (int i = 1; i <= 4; i++)
+        {
+            string controlAccess = Controls.GetControlValue(Controls.Input.Jump, i);
+            if (Input.GetButtonDown(controlAccess))
+            {
+                Debug.Log("GOTO Next Scene");
+                SceneManager.LoadScene("Menu", LoadSceneMode.Single);
+            }
+        }
+
     }
 }
