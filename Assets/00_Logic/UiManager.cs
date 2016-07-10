@@ -17,6 +17,7 @@ public class UiManager : MonoBehaviour {
     public GameObject player2Label;
     public GameObject player3Label;
     public GameObject player4Label;
+	public GameObject legendPanel;
     private GameObject[] playerLabels;
 
     public GameObject joinLabel;
@@ -37,7 +38,7 @@ public class UiManager : MonoBehaviour {
 	public Text playerDiedText;
 
 	public Text stageText;
-	private int stageCounter;
+	private int stageCounter = 1;
 	public int stages = 2;
 
 	private bool inputDelay;
@@ -104,7 +105,7 @@ public class UiManager : MonoBehaviour {
 					string controlAccess = Controls.GetControlValue(Controls.Input.Horizontal, i);
 					if(playerToPlay[i-1] && ! inputDelay)
 					{
-						stageCounter += Mathf.Clamp((int)(Input.GetAxis (controlAccess) * 2), 0, 1);
+						stageCounter += Mathf.Clamp((int)(Input.GetAxis (controlAccess) * 2), -1, 1);
 
 						if (stageCounter <= 0)
 							stageCounter = stages;
@@ -123,16 +124,19 @@ public class UiManager : MonoBehaviour {
                 {
                     joinLabel.SetActive(true);
                     startLabel.SetActive(false);
+					legendPanel.SetActive (false);
                 }
                 if (curentNumOfPlayers == 1)
                 {
                     joinLabel.SetActive(false);
                     startLabel.SetActive(false);
+					legendPanel.SetActive (true);
                 }
                 if (curentNumOfPlayers >= 2)
                 {
                     joinLabel.SetActive(false);
                     startLabel.SetActive(true);
+					legendPanel.SetActive (true);
                 }
 
                 if (Input.GetButtonDown("Start"))

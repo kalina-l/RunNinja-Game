@@ -6,7 +6,7 @@ public class PowerUpManager : MonoBehaviour
 {
     public GameObject[] PowerUps;
 
-
+	public int racePosition;
 
     private IPowerUp[] powerUpInstance;
 
@@ -27,7 +27,7 @@ public class PowerUpManager : MonoBehaviour
     {
 		Participant p = player.Participant;
 
-		int racePosition = 0;
+		//int racePosition = 0;
 
 		if(ParticipantManager.instance != null)
 			racePosition = ParticipantManager.instance.getPlayerRacePosition (p.id);
