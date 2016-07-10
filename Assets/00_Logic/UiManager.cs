@@ -29,6 +29,11 @@ public class UiManager : MonoBehaviour {
 
 	public GameObject gameplayPanel;
 
+	public Material player1Mat;
+	public Material player2Mat;
+	public Material player3Mat;
+	public Material player4Mat;
+	public Image playerDiedImage;
 	public Text playerDiedText;
 
 	public Text stageText;
@@ -189,13 +194,30 @@ public class UiManager : MonoBehaviour {
     }
 
 	public void playerDied(int playerNumber){
-		playerDiedText.text = "Player " + playerNumber + " defeated!";
-		StartCoroutine (deactivePlayerDiedText());
+		playerDiedText.text = "defeated!";
+		playerDiedImage.enabled = true;
+		switch (playerNumber) {
+		case 1:
+			playerDiedImage.material = player1Mat;
+			break;
+		case 2:
+			playerDiedImage.material = player2Mat;
+			break;
+		case 3:
+			playerDiedImage.material = player3Mat;
+			break;
+		case 4:
+			playerDiedImage.material = player4Mat;
+			break;
+
+		}
+		StartCoroutine (deactivePlayerDiedLabel());
 	}
 
-	private IEnumerator deactivePlayerDiedText(){
+	private IEnumerator deactivePlayerDiedLabel(){
 		yield return new WaitForSeconds(3);
 		playerDiedText.text = "";
+		playerDiedImage.enabled = false;
 	}
 
 	private IEnumerator InputDelay()
