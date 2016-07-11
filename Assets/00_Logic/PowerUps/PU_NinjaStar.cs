@@ -6,6 +6,7 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
     public GameObject NinjStar;
     private PlayerControl player;
 
+	public Vector3 scaleBig;
     public int starCount = 3;
     private int currentStars;
     public Sprite icon;
@@ -26,6 +27,10 @@ public class PU_NinjaStar : MonoBehaviour, IPowerUp {
 
         currentStars--;
 
+		if (currentStars == 0) {
+			star.transform.localScale = scaleBig;
+
+		}
         if (currentStars <= 0)
         {
             player.RemovePowerUp();
