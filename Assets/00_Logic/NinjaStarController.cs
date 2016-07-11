@@ -13,6 +13,9 @@ public class NinjaStarController : MonoBehaviour {
 
     public bool swap;
 
+	public float delay;
+	private float delayTimer;
+
     private PlayerControl player;
 
 	// Use this for initialization
@@ -28,6 +31,9 @@ public class NinjaStarController : MonoBehaviour {
         animator = GetComponent<Animator>();
 
         this.player = player;
+
+		if (delay > 0)
+			GetComponent<Collider2D>().enabled = false;
     }
 
     // Update is called once per frame
@@ -44,6 +50,15 @@ public class NinjaStarController : MonoBehaviour {
         }
         else
         {
+			if (delay > 0)
+			{
+				delay -= Time.deltaTime;
+			}
+			else
+			{
+				GetComponent<Collider2D>().enabled = true;
+			}
+
             timer += Time.deltaTime;
 
             if (timer > 0.25f)
@@ -51,6 +66,8 @@ public class NinjaStarController : MonoBehaviour {
                 Destroy();
             }
         }
+
+
     }
 
     private void Destroy()
