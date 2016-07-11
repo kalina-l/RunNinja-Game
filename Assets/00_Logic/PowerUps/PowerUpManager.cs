@@ -38,10 +38,17 @@ public class PowerUpManager : MonoBehaviour
 
 			int weight = powerUpInstance [i].GetWeight (racePosition);
 
-			for(int j=0; j<weight; j++)
-			{
-				weightedList.Add (powerUpInstance [i]);
-			}
+            if (weight != 0)
+            {
+                for (int j = 0; j < weight; j++)
+                {
+                    weightedList.Add(powerUpInstance[i]);
+                }
+            }
+            else
+            {
+                Debug.Log("Weight is null");
+            }
 		}
 
 		player.AddPowerUp(weightedList[(int)(Random.value * weightedList.Count)]);
