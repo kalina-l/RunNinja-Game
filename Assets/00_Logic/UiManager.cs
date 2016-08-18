@@ -40,6 +40,8 @@ public class UiManager : MonoBehaviour {
 	public Text stageText;
 	private int stageCounter = 1;
 	public int stages = 2;
+	public Image stageImage;
+	public Sprite[] stageSprites;
 
 	private bool inputDelay;
 
@@ -102,6 +104,7 @@ public class UiManager : MonoBehaviour {
 
 				for(int i = 1; i <= 4; i++)
 				{
+					Debug.Log ("Stage change pressed.");
 					string controlAccess = Controls.GetControlValue(Controls.Input.Horizontal, i);
 					if(playerToPlay[i-1] && ! inputDelay)
 					{
@@ -113,6 +116,7 @@ public class UiManager : MonoBehaviour {
 							stageCounter = 1;
 
 						stageText.text = "STAGE " + stageCounter;
+						stageImage.sprite = stageSprites [stageCounter - 1];
 
 						StartCoroutine (InputDelay ());
 					}
